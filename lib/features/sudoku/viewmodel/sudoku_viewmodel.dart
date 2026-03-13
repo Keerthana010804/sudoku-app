@@ -1,0 +1,169 @@
+import 'package:flutter/material.dart';
+
+class SudokuViewModel extends ChangeNotifier {
+  List<List<int>> board = [
+    [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    [0, 0, 0, 0, 8, 0, 0, 7, 9],
+  ];
+
+  List<List<bool>> isFixedCell = [
+    [true, true, false, false, true, false, false, false, false],
+    [true, false, false, true, true, true, false, false, false],
+    [false, true, true, false, false, false, false, true, false],
+    [true, false, false, false, true, false, false, false, true],
+    [true, false, false, true, false, true, false, false, true],
+    [true, false, false, false, true, false, false, false, true],
+    [false, true, false, false, false, false, true, true, false],
+    [false, false, false, true, true, true, false, false, true],
+    [false, false, false, false, true, false, false, true, true],
+  ];
+
+  int selectedRow = -1;
+  int selectedCol = -1;
+
+  bool isPencilMode = false;
+
+  List<Map<String, int>> moveHistory = [];
+
+  List<List<Set<int>>> notes = List.generate(
+    9,
+    (_) => List.generate(9, (_) => <int>{}),
+  );
+
+  void selectedCell(int row, int col) {
+    if (isFixedCell[row][col]) return;
+    selectedRow = row;
+    selectedCol = col;
+    notifyListeners();
+  }
+
+  bool isValidMove(int row, int col, int number) {
+    // check row
+    for (int i = 0; i < 9; i++) {
+      if (board[row][i] == number && i != col) {
+        return false;
+      }
+    }
+    //check col
+    for (int j = 0; j < 9; j++) {
+      if (board[j][col] == number && j != row) {
+        return false;
+      }
+    }
+    //check 3x3 box
+    int startRow = (row ~/ 3) * 3;
+    int startCol = (col ~/ 3) * 3;
+
+    for (int r = startRow; r < startRow + 3; r++) {
+      for (int c = startCol; c < startCol + 3; c++) {
+        if (board[r][c] == number && (r != row || c != col)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  bool solveSudoku(List<List<int>> board) {
+    for (int row = 0; row < 9; row++) {
+      for (int col = 0; col < 9; col++) {
+        if (board[row][col] == 0) {
+          for (int num = 1; num <= 9; num++) {
+            if (isValidMove(row, col, num)) {
+              board[row][col] = num;
+              if (solveSudoku(board)) {
+                return true;
+              }
+              board[row][col] = 0;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  void giveHint() {
+    if (selectedRow == -1 || selectedCol == -1) return;
+
+    if (board[selectedRow][selectedCol] != 0) return;
+    List<List<int>> tempBoard = board
+        .map((row) => List<int>.from(row))
+        .toList();
+    if (solveSudoku(tempBoard)) {
+      int correctNumber = tempBoard[selectedRow][selectedCol];
+      board[selectedRow][selectedCol] = correctNumber;
+      notifyListeners();
+    }
+  }
+
+  void togglePencil() {
+    isPencilMode = !isPencilMode;
+    notifyListeners();
+  }
+
+  void erase() {
+    if (selectedRow == -1 || selectedCol == -1) return;
+
+    int previousValue = board[selectedRow][selectedCol];
+    if (previousValue != 0) {
+      moveHistory.add({
+        "row": selectedRow,
+        "col": selectedCol,
+        "value": previousValue,
+      });
+    }
+    board[selectedRow][selectedCol] = 0;
+    notifyListeners();
+  }
+
+  void undo() {
+    if (moveHistory.isEmpty) return;
+
+    var lastMove = moveHistory.removeLast();
+
+    int row = lastMove["row"]!;
+    int col = lastMove["col"]!;
+    int value = lastMove["value"]!;
+
+    board[row][col] = value;
+
+    notifyListeners();
+  }
+
+  bool enterNumber(int number) {
+    if (selectedRow == -1 || selectedCol == -1) return true;
+
+    if (isPencilMode) {
+      if (notes[selectedRow][selectedCol].contains(number)) {
+        notes[selectedRow][selectedCol].remove(number);
+      } else {
+        notes[selectedRow][selectedCol].add(number);
+      }
+      notifyListeners();
+      return true;
+    }
+    int previousValue = board[selectedRow][selectedCol];
+
+    if (isValidMove(selectedRow, selectedCol, number)) {
+      moveHistory.add({
+        "row": selectedRow,
+        "col": selectedCol,
+        "value": previousValue,
+      });
+      board[selectedRow][selectedCol] = number;
+      notes[selectedRow][selectedCol].clear();
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+}
