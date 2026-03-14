@@ -19,15 +19,34 @@ class SudokuScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            SudokuGrid(
-              board: vm.board,
-              notes: vm.notes,
-              selectedRow: vm.selectedRow,
-              selectedCol: vm.selectedCol,
-              onCellTap: (row, col) {
-                vm.selectedCell(row, col);
-              },
-              isFixedCell: vm.isFixedCell,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.timer),
+                const SizedBox(width: 8,),
+                Text(
+                  vm.formattedTime,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20,),
+
+            Expanded(
+              child: SudokuGrid(
+                board: vm.board,
+                notes: vm.notes,
+                selectedRow: vm.selectedRow,
+                selectedCol: vm.selectedCol,
+                onCellTap: (row, col) {
+                  vm.selectedCell(row, col);
+                },
+                isFixedCell: vm.isFixedCell,
+              ),
             ),
 
             const SizedBox(height: 20),

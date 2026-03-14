@@ -1,6 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class SudokuViewModel extends ChangeNotifier {
+
+  SudokuViewModel() {
+    startTimer();
+  }
+
   List<List<int>> board = [
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
     [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -29,6 +35,23 @@ class SudokuViewModel extends ChangeNotifier {
   int selectedCol = -1;
 
   bool isPencilMode = false;
+
+  Timer? _timer;
+  int _seconds = 0;
+  int get seconds => _seconds;
+
+  String get formattedTime{
+    final minutes = (_seconds ~/ 60).toString().padLeft(2, '0');
+    final remainingSeconds = (_seconds % 60).toString().padLeft(2, '0');
+    return "$minutes:$remainingSeconds";
+  }
+
+  bool isPuzzleSolved(){
+    for (var row in board) {
+      if (row.contains(0)) return false;
+    }
+    return true;
+  }
 
   List<Map<String, int>> moveHistory = [];
 
@@ -161,9 +184,36 @@ class SudokuViewModel extends ChangeNotifier {
       });
       board[selectedRow][selectedCol] = number;
       notes[selectedRow][selectedCol].clear();
+      if (isPuzzleSolved()){
+        stopTimer();
+      }
       notifyListeners();
       return true;
     }
     return false;
+  }
+
+  void startTimer(){
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer){
+      _seconds++;
+      notifyListeners();
+    });
+  }
+
+  void stopTimer(){
+    _timer?.cancel();
+  }
+
+  void resetTimer(){
+    _timer?.cancel();
+    _seconds = 0;
+    startTimer();
+  }
+
+  @override
+  void dispose(){
+    _timer?.cancel();
+    super.dispose();
   }
 }
