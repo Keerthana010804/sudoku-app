@@ -1,5 +1,8 @@
+import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
+
+enum Difficulty{ easy, medium, hard }
 
 class SudokuViewModel extends ChangeNotifier {
 
@@ -79,7 +82,7 @@ class SudokuViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isValidMove(int row, int col, int number) {
+  bool isValidMove(List<List<int>> board, int row, int col, int number) {
     // check row
     for (int i = 0; i < 9; i++) {
       if (board[row][i] == number && i != col) {
@@ -111,7 +114,7 @@ class SudokuViewModel extends ChangeNotifier {
       for (int col = 0; col < 9; col++) {
         if (board[row][col] == 0) {
           for (int num = 1; num <= 9; num++) {
-            if (isValidMove(row, col, num)) {
+            if (isValidMove(board, row, col, num)) {
               board[row][col] = num;
               if (solveSudoku(board)) {
                 return true;
@@ -132,6 +135,7 @@ class SudokuViewModel extends ChangeNotifier {
     if (board[selectedRow][selectedCol] != 0) return;
 
     board[selectedRow][selectedCol] = solution[selectedRow][selectedCol];
+    notifyListeners();
   }
 
   void togglePencil() {
@@ -182,7 +186,7 @@ class SudokuViewModel extends ChangeNotifier {
     }
     int previousValue = board[selectedRow][selectedCol];
 
-    if (isValidMove(selectedRow, selectedCol, number)) {
+    if (isValidMove(board, selectedRow, selectedCol, number)) {
       moveHistory.add({
         "row": selectedRow,
         "col": selectedCol,
@@ -221,5 +225,80 @@ class SudokuViewModel extends ChangeNotifier {
   void dispose(){
     _timer?.cancel();
     super.dispose();
+  }
+
+  void newGame(Difficulty difficulty){
+    List<List<int>> newBoard =
+        List.generate(9, (_) => List.generate(9, (_) => 0));
+    fillBoard(newBoard);
+    solution = newBoard.map((row) => List<int>.from(row)).toList();
+    removeNumbers(newBoard, difficulty);
+    board = newBoard.map((row) => List<int>.from(row)).toList();
+    generateFixedCells();
+    moveHistory.clear();
+    notes = List.generate(
+        9,
+        (_) => List.generate(9, (_) => <int>{}),
+    );
+    selectedRow = -1;
+    selectedCol = -1;
+    resetTimer();
+    notifyListeners();
+  }
+
+  bool fillBoard(List<List<int>> board) {
+    for (int row = 0; row < 9; row++) {
+      for (int col = 0; col < 9; col++){
+        if (board[row][col] == 0) {
+          List<int> numbers = List.generate(9, (i) => i + 1);
+          numbers.shuffle();
+          for (int num in numbers) {
+            if (isValidMove(board, row, col, num)) {
+              board[row][col] = num;
+              if (fillBoard(board)) return true;
+              board[row][col] = 0;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  void removeNumbers(List<List<int>> board, Difficulty difficulty) {
+    int removeCount;
+
+    switch (difficulty) {
+      case Difficulty.easy:
+        removeCount = 30;
+        break;
+      case Difficulty.medium:
+        removeCount = 40;
+        break;
+      case Difficulty.hard:
+        removeCount = 50;
+        break;
+    }
+
+    while (removeCount > 0){
+      int row = Random().nextInt(9);
+      int col = Random().nextInt(9);
+
+      if (board[row][col] != 0) {
+        board[row][col] = 0;
+        removeCount--;
+      }
+    }
+  }
+
+  void generateFixedCells(){
+    isFixedCell = List.generate(
+        9,
+        (row) => List.generate(
+            9,
+            (col) => board[row][col] != 0,
+        )
+    );
   }
 }

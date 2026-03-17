@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku_app/features/sudoku/widgets/difficulty_bottom_sheet.dart';
 import 'package:sudoku_app/features/sudoku/widgets/number_pad.dart';
 import 'package:sudoku_app/features/sudoku/widgets/sudoku_grid.dart';
 import 'package:sudoku_app/features/sudoku/widgets/tool_bar.dart';
@@ -32,6 +33,14 @@ class SudokuScreen extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+
+            const SizedBox(height: 10,),
+
+            ElevatedButton(onPressed: (){
+              showDifficultyBottomSheet(context);
+            },
+                child: Text("New Game"),
             ),
 
             const SizedBox(height: 20,),
