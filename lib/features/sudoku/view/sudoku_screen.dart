@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sudoku_app/features/sudoku/widgets/difficulty_bottom_sheet.dart';
 import 'package:sudoku_app/features/sudoku/widgets/number_pad.dart';
 import 'package:sudoku_app/features/sudoku/widgets/sudoku_grid.dart';
 import 'package:sudoku_app/features/sudoku/widgets/tool_bar.dart';
@@ -24,7 +23,7 @@ class SudokuScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.timer),
-                const SizedBox(width: 8,),
+                const SizedBox(width: 8),
                 Text(
                   vm.formattedTime,
                   style: const TextStyle(
@@ -35,15 +34,7 @@ class SudokuScreen extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 10,),
-
-            ElevatedButton(onPressed: (){
-              showDifficultyBottomSheet(context);
-            },
-                child: Text("New Game"),
-            ),
-
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
 
             Expanded(
               child: SudokuGrid(
@@ -71,13 +62,35 @@ class SudokuScreen extends StatelessWidget {
 
             NumberPad(
               onNumberTap: (number) {
-                bool valid = vm.enterNumber(number);
+                bool isValid = vm.enterNumber(number);
 
-                if (!valid) {
+                if (!isValid) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Invalid Move!"),
                       duration: Duration(seconds: 2),
+                    ),
+                  );
+                  return;
+                }
+
+                if (vm.isPuzzleSolved()) {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text("🎉 Congratulations!"),
+                      content: Text(
+                        "You solved the puzzle!\nTime: ${vm.formattedTime}",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(dialogContext); // close dialog
+                            Navigator.pop(context); // go back to HomeScreen
+                          },
+                          child: const Text("OK"),
+                        ),
+                      ],
                     ),
                   );
                 }

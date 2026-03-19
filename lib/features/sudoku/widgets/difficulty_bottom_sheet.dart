@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sudoku_app/features/sudoku/view/sudoku_screen.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 
 void showDifficultyBottomSheet(BuildContext context) {
@@ -12,7 +13,7 @@ void showDifficultyBottomSheet(BuildContext context) {
       ),
       builder: (context){
         return Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -21,17 +22,20 @@ void showDifficultyBottomSheet(BuildContext context) {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20,),
-              _builtOption(context, "Easy", (){
+              _buildOption(context, "Easy", (){
                 Navigator.pop(context);
                 vm.newGame(Difficulty.easy);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => SudokuScreen()));
               }),
-              _builtOption(context, "Medium", (){
+              _buildOption(context, "Medium", (){
                 Navigator.pop(context);
                 vm.newGame(Difficulty.medium);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => SudokuScreen()));
               }),
-              _builtOption(context, "Hard", (){
+              _buildOption(context, "Hard", (){
                 Navigator.pop(context);
                 vm.newGame(Difficulty.hard);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => SudokuScreen()));
               })
             ],
           ),
@@ -40,9 +44,9 @@ void showDifficultyBottomSheet(BuildContext context) {
   );
 }
 
-Widget _builtOption(BuildContext context, String title, VoidCallback onTap) {
+Widget _buildOption(BuildContext context, String title, VoidCallback onTap) {
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: 8),
+    padding: const EdgeInsets.symmetric(vertical: 8),
     child: SizedBox(
       width: double.infinity,
       child: ElevatedButton(onPressed: onTap, child: Text(title)),

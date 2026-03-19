@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku_app/features/sudoku/view/sudoku_screen.dart';
+import 'package:sudoku_app/features/splash/splash_screen.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 
 void main(){
@@ -20,7 +20,7 @@ class SudokuApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Sudoku App',
-      home: SudokuScreen(),
+      home: SplashScreen(),
     );
   }
 }
