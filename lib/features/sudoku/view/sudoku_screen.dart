@@ -56,6 +56,7 @@ class SudokuScreen extends StatelessWidget {
               onErase: vm.erase,
               onPencil: vm.togglePencil,
               onHint: vm.giveHint,
+              isPencilMode: vm.isPencilMode,
             ),
 
             const SizedBox(height: 20),

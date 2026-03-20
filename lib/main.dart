@@ -7,7 +7,7 @@ void main(){
   runApp(
     ChangeNotifierProvider(
         create: (_) => SudokuViewModel(),
-      child: SudokuApp(),
+      child: const SudokuApp(),
     )
   );
 }
@@ -20,6 +20,10 @@ class SudokuApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Sudoku App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+      ),
       home: SplashScreen(),
     );
   }

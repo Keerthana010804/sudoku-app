@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class NumberPad extends StatelessWidget {
   final Function(int) onNumberTap;
 
-  const NumberPad({
-    super.key,
-    required this.onNumberTap,
-  });
+  const NumberPad({super.key, required this.onNumberTap});
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +13,43 @@ class NumberPad extends StatelessWidget {
         children: List.generate(9, (index) {
           int number = index + 1;
           return Expanded(
-            child: GestureDetector(
-              onTap: () => onNumberTap(number),
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    number.toString(),
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => onNumberTap(number),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.orange, Colors.deepOrange],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        number.toString(),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           );
-      }),
+        }),
       ),
     );
   }

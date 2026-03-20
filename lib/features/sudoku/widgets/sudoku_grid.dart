@@ -27,25 +27,30 @@ class SudokuGrid extends StatelessWidget {
     if (row == selectedRow && col == selectedCol){
       return Colors.blue.withValues(alpha: 0.3);
     }
+    // highLight selected numbers
+    int selectedValue = board[selectedRow][selectedCol];
+    if (selectedValue != 0 && board[row][col] == selectedValue) {
+      return Colors.green.withValues(alpha: 0.3);
+    }
     // same row
     if (row == selectedRow){
-      return Colors.blue.withValues(alpha: 0.1);
+      return Colors.blue.withValues(alpha: 0.08);
     }
     // same column
     if (col == selectedCol){
-      return Colors.blue.withValues(alpha: 0.1);
+      return Colors.blue.withValues(alpha: 0.08);
     }
     // same 3x3 box
     if ((row ~/ 3 == selectedRow ~/ 3) &&
         (col ~/ 3 == selectedCol ~/ 3)) {
-      return Colors.blue.withValues(alpha: 0.1);
+      return Colors.blue.withValues(alpha: 0.08);
     }
     return Colors.white;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Material(
       child: AspectRatio(
         aspectRatio: 1,
         child: GridView.builder(
@@ -59,26 +64,26 @@ class SudokuGrid extends StatelessWidget {
             int col = index % 9;
 
             int value = board[row][col];
-            return GestureDetector(
+            return InkWell(
               onTap: () => onCellTap(row,col),
               child: Container(
                   decoration: BoxDecoration(
                     color: getCellColor(row, col),
                     border: Border(
                       top: BorderSide(
-                        color: Colors.black,
+                        color: Colors.grey.shade800,
                         width: row % 3 == 0 ? 2 : 0.5,
                       ),
                       left: BorderSide(
-                        color: Colors.black,
+                        color: Colors.grey.shade800,
                         width: col % 3 == 0 ? 2 : 0.5,
                       ),
                       right: BorderSide(
-                        color: Colors.black,
+                        color: Colors.grey.shade800,
                         width: (col + 1) % 3 == 0 ? 2 : 0.5,
                       ),
                       bottom: BorderSide(
-                        color: Colors.black,
+                        color: Colors.grey.shade800,
                         width: (row + 1) % 3 == 0 ? 2 : 0.5,
                       ),
                     ),
@@ -88,27 +93,39 @@ class SudokuGrid extends StatelessWidget {
                     child: Text(
                       value.toString(),
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: isFixedCell[row][col] ? Colors.black : Colors.blue,
                       ),
                     ),
                   )
-                      : GridView.count(
-                    crossAxisCount: 3,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: List.generate(9, (i){
-                      int n = i + 1;
-                      return Center(
-                        child: Text(
-                          notes[row][col].contains(n) ? n.toString() : "",
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.black87
-                          ),
-                        ),
-                      );
-                    }
+                      : Padding(
+                      padding: const EdgeInsets.all(2),
+                    child: Column(
+                      children:
+                      List.generate(3, (r) {
+                        return Expanded(
+                            child: Row(
+                              children: List.generate(3, (c){
+                                int n = r * 3 + c + 1;
+                                return Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        notes[row][col].contains(n)
+                                            ? n.toString()
+                                            :"",
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.black87
+                                        ),
+                                      ),
+                                    )
+                                );
+                              }
+                              ),
+                            )
+                        );
+                      })
                     ),
                   )
               ),
