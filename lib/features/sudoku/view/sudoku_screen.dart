@@ -5,9 +5,23 @@ import 'package:sudoku_app/features/sudoku/widgets/tool_bar.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class SudokuScreen extends StatelessWidget {
+class SudokuScreen extends StatefulWidget {
   const SudokuScreen({super.key});
 
+  @override
+  State<SudokuScreen> createState() => _SudokuScreenState();
+}
+
+class _SudokuScreenState extends State<SudokuScreen> {
+  @override
+  void initState(){
+    super.initState();
+
+    Future.microtask(() async {
+      final vm = context.read<SudokuViewModel>();
+      await vm.loadGame();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SudokuViewModel>();

@@ -4,6 +4,7 @@ import 'package:sudoku_app/features/sudoku/view/sudoku_screen.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 
 void showDifficultyBottomSheet(BuildContext context) {
+  final parentContext = context;
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -24,7 +25,7 @@ void showDifficultyBottomSheet(BuildContext context) {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            const SizedBox(height: 15,),
+            const SizedBox(height: 15),
             const Text(
               "Select Difficulty",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -34,13 +35,12 @@ void showDifficultyBottomSheet(BuildContext context) {
               context,
               "Easy",
               Colors.green,
-              Icons.sentiment_satisfied,
-              () {
-                Navigator.pop(context);
-                vm.newGame(Difficulty.easy);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SudokuScreen()),
+              Icons.sentiment_satisfied_outlined,
+              () async {
+                await handleDifficultySelection(
+                    parentContext: parentContext,
+                    sheetContext: context, vm: vm,
+                    difficulty: Difficulty.easy
                 );
               },
             ),
@@ -49,12 +49,11 @@ void showDifficultyBottomSheet(BuildContext context) {
               "Medium",
               Colors.orange,
               Icons.sentiment_neutral,
-              () {
-                Navigator.pop(context);
-                vm.newGame(Difficulty.medium);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SudokuScreen()),
+              () async {
+                await handleDifficultySelection(
+                    parentContext: parentContext,
+                    sheetContext: context, vm: vm,
+                    difficulty: Difficulty.medium,
                 );
               },
             ),
@@ -63,12 +62,11 @@ void showDifficultyBottomSheet(BuildContext context) {
               "Hard",
               Colors.red,
               Icons.sentiment_very_dissatisfied,
-              () {
-                Navigator.pop(context);
-                vm.newGame(Difficulty.hard);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SudokuScreen()),
+              () async {
+                await handleDifficultySelection(
+                    parentContext: parentContext,
+                    sheetContext: context, vm: vm,
+                    difficulty: Difficulty.hard,
                 );
               },
             ),
@@ -77,6 +75,57 @@ void showDifficultyBottomSheet(BuildContext context) {
       );
     },
   );
+}
+
+Future<void> handleDifficultySelection({
+  required BuildContext parentContext,
+  required BuildContext sheetContext,
+  required SudokuViewModel vm,
+  required Difficulty difficulty,
+}) async {
+  final hasGame = await vm.hasSavedGame();
+
+  Navigator.pop(sheetContext);
+
+  if (hasGame) {
+    showDialog(
+      context: parentContext,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Start New Game?"),
+        content: const Text(
+          "Your current progress will be lost.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+            },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              vm.clearSavedGame();
+              vm.newGame(difficulty);
+              Navigator.push(
+                parentContext,
+                MaterialPageRoute(
+                  builder: (_) => const SudokuScreen(),
+                ),
+              );
+            },
+            child: const Text("Yes"),
+          ),
+        ],
+      ),
+    );
+  } else {
+    vm.newGame(difficulty);
+    Navigator.push(
+      parentContext,
+      MaterialPageRoute(builder: (_) => const SudokuScreen()),
+    );
+  }
 }
 
 Widget _buildOption(

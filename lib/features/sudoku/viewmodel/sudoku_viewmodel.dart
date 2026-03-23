@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum Difficulty{ easy, medium, hard }
 
@@ -108,6 +110,7 @@ class SudokuViewModel extends ChangeNotifier {
     if (board[selectedRow][selectedCol] != 0) return;
 
     board[selectedRow][selectedCol] = solution[selectedRow][selectedCol];
+    saveGame();
     notifyListeners();
   }
 
@@ -128,6 +131,7 @@ class SudokuViewModel extends ChangeNotifier {
       });
     }
     board[selectedRow][selectedCol] = 0;
+    saveGame();
     notifyListeners();
   }
 
@@ -141,6 +145,7 @@ class SudokuViewModel extends ChangeNotifier {
     int value = lastMove["value"]!;
 
     board[row][col] = value;
+    saveGame();
 
     notifyListeners();
   }
@@ -154,6 +159,7 @@ class SudokuViewModel extends ChangeNotifier {
       } else {
         notes[selectedRow][selectedCol].add(number);
       }
+      saveGame();
       notifyListeners();
       return true;
     }
@@ -167,8 +173,10 @@ class SudokuViewModel extends ChangeNotifier {
       });
       board[selectedRow][selectedCol] = number;
       notes[selectedRow][selectedCol].clear();
+      saveGame();
       if (isPuzzleSolved()){
         stopTimer();
+        clearSavedGame();
         notifyListeners();
         return true;
       }
@@ -275,5 +283,67 @@ class SudokuViewModel extends ChangeNotifier {
             (col) => board[row][col] != 0,
         )
     );
+  }
+
+  Future<void> saveGame() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString("board", jsonEncode(board));
+    await prefs.setString("solution", jsonEncode(solution));
+    await prefs.setString("fixed", jsonEncode(isFixedCell));
+    await prefs.setInt("seconds", _seconds);
+
+    List<List<List<int>>> notesList = notes
+      .map((row) => row.map((cell) => cell.toList()).toList())
+      .toList();
+
+    await prefs.setString("notes", jsonEncode(notesList));
+  }
+
+  Future<bool> loadGame() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final boardData = prefs.getString("board");
+    if (boardData == null) return false;
+
+    board = (jsonDecode(boardData) as List)
+      .map((row) => List<int>.from(row))
+      .toList();
+
+    solution = (jsonDecode(prefs.getString("solution")!) as List)
+      .map((row) => List<int>.from(row))
+      .toList();
+
+    isFixedCell = (jsonDecode(prefs.getString("fixed")!) as List)
+      .map((row) => List<bool>.from(row))
+      .toList();
+
+    _seconds = prefs.getInt("seconds") ?? 0;
+
+    final notesString = prefs.getString("notes");
+
+    if(notesString != null) {
+      List notesData = jsonDecode(notesString);
+      notes = notesData
+          .map<List<Set<int>>>((row) =>
+          (row as List)
+              .map<Set<int>>((cell) => Set<int>.from(cell))
+              .toList())
+          .toList();
+    }
+
+    notifyListeners();
+    startTimer();
+    return true;
+  }
+
+  Future<bool> hasSavedGame() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("board") != null;
+  }
+
+  Future<void> clearSavedGame() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }
