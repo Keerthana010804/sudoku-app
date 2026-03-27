@@ -3,15 +3,24 @@ import 'package:provider/provider.dart';
 import 'package:sudoku_app/features/splash/splash_screen.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 
-void main(){
-  runApp(
-    ChangeNotifierProvider(
-        create: (_) => SudokuViewModel(),
-      child: const SudokuApp(),
-    )
-  );
+void main() {
+  runApp(const MyApp());
 }
 
+// Root Widget
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => SudokuViewModel())],
+      child: const SudokuApp(),
+    );
+  }
+}
+
+// Main App UI
 class SudokuApp extends StatelessWidget {
   const SudokuApp({super.key});
 
@@ -20,11 +29,16 @@ class SudokuApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Sudoku App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: SplashScreen(),
+      theme: _appTheme,
+      home: const SplashScreen(),
     );
   }
 }
+
+// App Theme
+final ThemeData _appTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  scaffoldBackgroundColor: Colors.white,
+  appBarTheme: const AppBarTheme(elevation: 0, centerTitle: true),
+  textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 16)),
+);
