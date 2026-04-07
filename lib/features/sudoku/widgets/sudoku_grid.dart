@@ -7,6 +7,7 @@ class SudokuGrid extends StatelessWidget {
   final int selectedCol;
   final Function(int, int) onCellTap;
   final List<List<bool>> isFixedCell;
+  final int? selectedNumber;
 
   const SudokuGrid({
     super.key,
@@ -16,9 +17,17 @@ class SudokuGrid extends StatelessWidget {
     required this.selectedCol,
     required this.onCellTap,
     required this.isFixedCell,
+    required this.selectedNumber,
   });
 
   Color getCellColor(int row, int col){
+    // if number is selected
+    if (selectedNumber != null) {
+      if (board[row][col] == selectedNumber) {
+        return Colors.green.withValues(alpha: 0.3);
+      }
+      return Colors.white;
+    }
     // if no cell selected
     if (selectedRow == -1 || selectedCol == -1) {
       return Colors.white;

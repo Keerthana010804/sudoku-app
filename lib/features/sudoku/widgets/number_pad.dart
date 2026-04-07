@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class NumberPad extends StatelessWidget {
   final Function(int) onNumberTap;
+  final int? selectedNumber;
 
-  const NumberPad({super.key, required this.onNumberTap});
+  const NumberPad({
+    super.key,
+    required this.onNumberTap,
+    required this.selectedNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +17,7 @@ class NumberPad extends StatelessWidget {
       child: Row(
         children: List.generate(9, (index) {
           int number = index + 1;
+          bool isSelected = selectedNumber == number;
           return Expanded(
             child: Padding(
               padding: EdgeInsets.all(4),
@@ -22,9 +28,12 @@ class NumberPad extends StatelessWidget {
                   onTap: () => onNumberTap(number),
                   child: Ink(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.orange, Colors.deepOrange],
-                      ),
+                      color: isSelected ? Colors.white : null,
+                      gradient: isSelected
+                          ? null
+                          : const LinearGradient(
+                              colors: [Colors.orange, Colors.deepOrange],
+                            ),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -40,7 +49,7 @@ class NumberPad extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: isSelected ? Colors.deepOrange : Colors.white,
                         ),
                       ),
                     ),

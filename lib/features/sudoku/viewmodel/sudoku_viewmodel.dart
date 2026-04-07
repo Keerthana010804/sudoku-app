@@ -23,6 +23,7 @@ class SudokuViewModel extends ChangeNotifier {
 
   int selectedRow = -1;
   int selectedCol = -1;
+  int? selectedNumber;
 
   bool isPencilMode = false;
 
@@ -54,6 +55,7 @@ class SudokuViewModel extends ChangeNotifier {
     if (isFixedCell[row][col]) return;
     selectedRow = row;
     selectedCol = col;
+    selectedNumber = null;
     notifyListeners();
   }
 
@@ -345,5 +347,10 @@ class SudokuViewModel extends ChangeNotifier {
   Future<void> clearSavedGame() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  void selectNumber(int number) {
+    selectedNumber = number;
+    notifyListeners();
   }
 }

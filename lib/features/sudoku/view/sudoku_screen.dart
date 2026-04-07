@@ -62,6 +62,7 @@ class _SudokuBody extends StatelessWidget {
                 vm.selectedCell(row, col);
               },
               isFixedCell: vm.isFixedCell,
+              selectedNumber: vm.selectedNumber,
             ),
           ),
           const SizedBox(height: 20),
@@ -104,9 +105,11 @@ class _TimeView extends StatelessWidget {
 class _NumberPadSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final vm = context.read<SudokuViewModel>();
+    final vm = context.watch<SudokuViewModel>();
     return NumberPad(
+      selectedNumber: vm.selectedNumber,
       onNumberTap: (number) {
+        vm.selectNumber(number);
         final isValid = vm.enterNumber(number);
         if (!isValid) {
           _showInvalidMove(context);
