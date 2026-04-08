@@ -24,6 +24,8 @@ class SudokuViewModel extends ChangeNotifier {
   int selectedRow = -1;
   int selectedCol = -1;
   int? selectedNumber;
+  int mistakes = 0;
+  final int maxMistakes = 3;
 
   bool isPencilMode = false;
 
@@ -184,8 +186,11 @@ class SudokuViewModel extends ChangeNotifier {
       }
       notifyListeners();
       return true;
+    } else {
+      mistakes++;
+      notifyListeners();
+      return false;
     }
-    return false;
   }
 
   void startTimer(){
@@ -227,6 +232,8 @@ class SudokuViewModel extends ChangeNotifier {
     );
     selectedRow = -1;
     selectedCol = -1;
+    selectedNumber = null;
+    mistakes = 0;
     resetTimer();
     notifyListeners();
   }
@@ -351,6 +358,11 @@ class SudokuViewModel extends ChangeNotifier {
 
   void selectNumber(int number) {
     selectedNumber = number;
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    selectedNumber = null;
     notifyListeners();
   }
 }
