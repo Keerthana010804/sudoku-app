@@ -67,6 +67,7 @@ class _SudokuBody extends StatelessWidget {
               },
               isFixedCell: vm.isFixedCell,
               selectedNumber: vm.selectedNumber,
+              errorCells: vm.errorCells,
             ),
           ),
           const SizedBox(height: 20),
@@ -108,7 +109,7 @@ class _TimeView extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               time,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
         ),

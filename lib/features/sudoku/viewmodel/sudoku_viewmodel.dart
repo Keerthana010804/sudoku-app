@@ -39,6 +39,8 @@ class SudokuViewModel extends ChangeNotifier {
     return "$minutes:$remainingSeconds";
   }
 
+  Set<String> errorCells = {};
+
   bool isPuzzleSolved(){
     for (var row in board) {
       if (row.contains(0)) return false;
@@ -188,6 +190,12 @@ class SudokuViewModel extends ChangeNotifier {
       return true;
     } else {
       mistakes++;
+      errorCells.add("$selectedRow-$selectedCol");
+      notifyListeners();
+      Future.delayed(const Duration(milliseconds: 500), (){
+        errorCells.remove("$selectedRow-$selectedCol");
+        notifyListeners();
+      });
       notifyListeners();
       return false;
     }

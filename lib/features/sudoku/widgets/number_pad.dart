@@ -12,53 +12,59 @@ class NumberPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 70,
-      child: Row(
-        children: List.generate(9, (index) {
-          int number = index + 1;
-          bool isSelected = selectedNumber == number;
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(4),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () => onNumberTap(number),
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : null,
-                      gradient: isSelected
-                          ? null
-                          : const LinearGradient(
-                              colors: [Colors.orange, Colors.deepOrange],
-                            ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        number.toString(),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.deepOrange : Colors.white,
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 150),
+      child: SizedBox(
+        height: 70,
+        child: Row(
+          children: List.generate(9, (index) {
+            int number = index + 1;
+            bool isSelected = selectedNumber == number;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(4),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => onNumberTap(number),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        color: isSelected ? null : Colors.white,
+                        gradient: isSelected
+                            ? const LinearGradient(
+                          colors: [Colors.orange, Colors.deepOrange],
+                        )
+                            : null,
+                        borderRadius: BorderRadius.circular(12),
+                        border: isSelected
+                        ? null
+                        : Border.all(color: Colors.deepOrange,width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          number.toString(),
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? Colors.white : Colors.deepOrange,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
