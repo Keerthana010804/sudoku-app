@@ -13,12 +13,6 @@ class SudokuScreen extends StatefulWidget {
 }
 
 class _SudokuScreenState extends State<SudokuScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    Future.microtask(() => context.read<SudokuViewModel>().loadGame());
-  }
 
   @override
   Widget build(BuildContext context) {
