@@ -44,10 +44,20 @@ class _SudokuBody extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _TimeView(
-              time: vm.formattedTime,
-            mistakes: vm.mistakes,
-            maxMistakes: vm.maxMistakes,
+          Selector<SudokuViewModel, String>(
+            selector: (_, vm) => vm.formattedTime,
+            builder: (_, time, __) {
+              return Selector<SudokuViewModel, int>(
+                selector: (_, vm) => vm.mistakes,
+                builder: (_, mistakes, __){
+                  return _TimeView(
+                    time: time,
+                    mistakes: mistakes,
+                    maxMistakes: context.read<SudokuViewModel>().maxMistakes,
+                  );
+                },
+              );
+            }
           ),
           const SizedBox(height: 20),
           Expanded(
