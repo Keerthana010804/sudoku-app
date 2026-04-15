@@ -8,9 +8,7 @@ enum Difficulty{ easy, medium, hard }
 
 class SudokuViewModel extends ChangeNotifier {
 
-  SudokuViewModel() {
-    startTimer();
-  }
+  SudokuViewModel();
 
   List<List<int>> board =
     List.generate(9, (_) => List.generate(9, (_) => 0));
@@ -137,6 +135,7 @@ class SudokuViewModel extends ChangeNotifier {
       });
     }
     board[selectedRow][selectedCol] = 0;
+    notes[selectedRow][selectedCol].clear();
     saveGame();
     notifyListeners();
   }
@@ -343,6 +342,7 @@ class SudokuViewModel extends ChangeNotifier {
     await prefs.setString("solution", jsonEncode(solution));
     await prefs.setString("fixed", jsonEncode(isFixedCell));
     await prefs.setInt("seconds", _seconds);
+    await prefs.setInt("mistakes", mistakes);
 
     List<List<List<int>>> notesList = notes
       .map((row) => row.map((cell) => cell.toList()).toList())
@@ -370,6 +370,7 @@ class SudokuViewModel extends ChangeNotifier {
       .toList();
 
     _seconds = prefs.getInt("seconds") ?? 0;
+    mistakes = prefs.getInt("mistakes") ?? 0;
 
     final notesString = prefs.getString("notes");
 
