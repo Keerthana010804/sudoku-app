@@ -26,6 +26,8 @@ class SudokuViewModel extends ChangeNotifier {
   final int maxMistakes = 3;
 
   bool isPencilMode = false;
+  bool isGameOver = false;
+  bool isGameWon = false;
 
   Timer? _timer;
   int _seconds = 0;
@@ -54,10 +56,11 @@ class SudokuViewModel extends ChangeNotifier {
   );
 
   void selectedCell(int row, int col) {
-    if (isFixedCell[row][col]) return;
     selectedRow = row;
     selectedCol = col;
-    selectedNumber = null;
+    if (!isFixedCell[row][col]) {
+      selectedNumber = null;
+    }
     notifyListeners();
   }
 
@@ -132,6 +135,7 @@ class SudokuViewModel extends ChangeNotifier {
         "row": selectedRow,
         "col": selectedCol,
         "value": previousValue,
+        "mistakes": mistakes,
       });
     }
     board[selectedRow][selectedCol] = 0;
@@ -148,8 +152,10 @@ class SudokuViewModel extends ChangeNotifier {
     int row = lastMove["row"]!;
     int col = lastMove["col"]!;
     int value = lastMove["value"]!;
+    int prevMistakes = lastMove["mistakes"] ?? mistakes;
 
     board[row][col] = value;
+    mistakes = prevMistakes;
     saveGame();
 
     notifyListeners();
@@ -175,11 +181,14 @@ class SudokuViewModel extends ChangeNotifier {
         "row": selectedRow,
         "col": selectedCol,
         "value": previousValue,
+        "mistakes": mistakes,
       });
       board[selectedRow][selectedCol] = number;
       notes[selectedRow][selectedCol].clear();
+      removeNotes(selectedRow, selectedCol, number);
       saveGame();
       if (isPuzzleSolved()){
+        isGameWon = true;
         stopTimer();
         clearSavedGame();
         notifyListeners();
@@ -189,13 +198,16 @@ class SudokuViewModel extends ChangeNotifier {
       return true;
     } else {
       mistakes++;
+      if(mistakes >= maxMistakes) {
+        isGameOver = true;
+        stopTimer();
+      }
       errorCells.add("$selectedRow-$selectedCol");
       notifyListeners();
       Future.delayed(const Duration(milliseconds: 500), (){
         errorCells.remove("$selectedRow-$selectedCol");
         notifyListeners();
       });
-      notifyListeners();
       return false;
     }
   }
@@ -407,5 +419,25 @@ class SudokuViewModel extends ChangeNotifier {
   void clearSelection() {
     selectedNumber = null;
     notifyListeners();
+  }
+
+  void removeNotes(int row, int col, int number) {
+    // remove from row
+    for (int c = 0; c < 9; c++) {
+      notes[row][c].remove(number);
+    }
+    // remove from column
+    for (int r = 0; r < 9; r++) {
+      notes[r][col].remove(number);
+    }
+    // remove from 3x3 box
+    int startRow = (row ~/ 3) * 3;
+    int startCol = (col ~/ 3) * 3;
+
+    for (int r = startRow; r < startRow + 3; r++){
+      for (int c = startCol; c < startCol + 3; c++) {
+        notes[r][c].remove(number);
+      }
+    }
   }
 }

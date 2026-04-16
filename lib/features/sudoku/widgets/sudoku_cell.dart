@@ -36,11 +36,8 @@ class SudokuCell extends StatelessWidget {
       return Colors.red.withValues(alpha: 0.4);
     }
     // if number is selected
-    if (selectedNumber != null) {
-      if (board[row][col] == selectedNumber) {
-        return Colors.green.withValues(alpha: 0.3);
-      }
-      return Colors.white;
+    if (selectedNumber != null && board[row][col] == selectedNumber) {
+      return Colors.green.withValues(alpha: 0.3);
     }
     // if no cell selected
     if (selectedRow == -1 || selectedCol == -1) {
