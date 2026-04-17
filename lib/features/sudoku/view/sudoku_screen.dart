@@ -40,6 +40,14 @@ class _SudokuBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SudokuViewModel>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(vm.isGameOver) {
+        _showGameOverDialog(context);
+      }
+      if(vm.isGameWon) {
+        _showWinDialog(context, vm.formattedTime);
+      }
+    });
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -86,6 +94,42 @@ class _SudokuBody extends StatelessWidget {
           _NumberPadSection(),
         ],
       ),
+    );
+  }
+  void _showWinDialog(BuildContext context, String formattedTime) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("🎉 Congratulations!"),
+        content: Text("You solved the puzzle!\nTime: $formattedTime"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.pop(context);
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showGameOverDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text("😢 Game Over"),
+          content: const Text("You made too many mistakes"),
+          actions: [
+            TextButton(onPressed: (){
+              Navigator.pop(dialogContext);
+              Navigator.pop(context);
+            },
+              child: const Text("OK"),
+            )
+          ],
+        )
     );
   }
 }
@@ -148,17 +192,9 @@ class _NumberPadSection extends StatelessWidget {
         if (!isValid) {
           _showInvalidMove(context);
           vm.clearSelection();
-          if (vm.mistakes >= vm.maxMistakes) {
-            vm.stopTimer();
-            vm.clearSavedGame();
-            _showGameOverDialog(context);
-          }
           return;
         }
         vm.selectNumber(number);
-        if (vm.isPuzzleSolved()) {
-          _showWinDialog(context, vm.formattedTime);
-        }
       },
     );
   }
@@ -169,43 +205,6 @@ class _NumberPadSection extends StatelessWidget {
         content: Text("Invalid Move!"),
         duration: Duration(seconds: 2),
       ),
-    );
-  }
-
-  void _showWinDialog(BuildContext context, String formattedTime) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text("🎉 Congratulations!"),
-        content: Text("You solved the puzzle!\nTime: $formattedTime"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              Navigator.pop(context);
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  void _showGameOverDialog(BuildContext context) {
-    showDialog(
-        context: context, 
-        builder: (dialogContext) => AlertDialog(
-          title: const Text("😢 Game Over"),
-          content: const Text("You made too many mistakes"),
-          actions: [
-            TextButton(onPressed: (){
-              Navigator.pop(dialogContext);
-              Navigator.pop(context);
-            },
-                child: const Text("OK"),
-            )
-          ],
-        )
     );
   }
 }

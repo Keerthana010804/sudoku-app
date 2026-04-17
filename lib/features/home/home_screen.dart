@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku_app/features/sudoku/view/sudoku_screen.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 import 'package:sudoku_app/features/sudoku/widgets/difficulty_bottom_sheet.dart';
 
@@ -47,7 +46,9 @@ class _HomeBody extends StatelessWidget {
         future: vm.hasSavedGame(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const CircularProgressIndicator(color: Colors.white);
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           }
 
           final hasGame = snapshot.data!;
@@ -61,19 +62,16 @@ class _HomeBody extends StatelessWidget {
                   text: "Continue",
                   onPressed: () async {
                     await vm.loadGame();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SudokuScreen()),
-                    );
+                    Navigator.pushNamed(context, '/game');
                   },
                 ),
               if (hasGame) const SizedBox(height: 20),
               _PrimaryButton(
-                  text: "New Game",
-                  onPressed: () {
-                    showDifficultyBottomSheet(context);
-                  }
-              )
+                text: "New Game",
+                onPressed: () {
+                  showDifficultyBottomSheet(context);
+                },
+              ),
             ],
           );
         },
@@ -109,7 +107,7 @@ class _PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         elevation: 5,
       ),
