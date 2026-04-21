@@ -163,7 +163,7 @@ class SudokuViewModel extends ChangeNotifier {
 
   bool enterNumber(int number) {
     if (selectedRow == -1 || selectedCol == -1) return true;
-
+    if (isFixedCell[selectedRow][selectedCol]) return false;
     if (isPencilMode) {
       if (notes[selectedRow][selectedCol].contains(number)) {
         notes[selectedRow][selectedCol].remove(number);
@@ -253,6 +253,8 @@ class SudokuViewModel extends ChangeNotifier {
     selectedCol = -1;
     selectedNumber = null;
     mistakes = 0;
+    isGameOver = false;
+    isGameWon = false;
     resetTimer();
     notifyListeners();
   }

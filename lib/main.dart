@@ -17,17 +17,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SudokuViewModel(),
-          lazy: true,
         ),
       ],
-      child: const SudokuApp(),
+      child: const AppView(),
     );
   }
 }
 
 // Main App UI
-class SudokuApp extends StatelessWidget {
-  const SudokuApp({super.key});
+class AppView extends StatelessWidget {
+  const AppView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,9 @@ class SudokuApp extends StatelessWidget {
       title: 'Sudoku App',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue
+        ),
         scaffoldBackgroundColor: Colors.white,
       ),
       initialRoute: '/',

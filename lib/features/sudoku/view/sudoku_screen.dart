@@ -42,9 +42,11 @@ class _SudokuBody extends StatelessWidget {
     final vm = context.watch<SudokuViewModel>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if(vm.isGameOver) {
+        vm.isGameOver = false;
         _showGameOverDialog(context);
       }
       if(vm.isGameWon) {
+        vm.isGameWon = false;
         _showWinDialog(context, vm.formattedTime);
       }
     });
@@ -105,6 +107,10 @@ class _SudokuBody extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
+              final vm = context.read<SudokuViewModel>();
+              vm.isGameOver = false;
+              vm.isGameWon = false;
+
               Navigator.pop(dialogContext);
               Navigator.pop(context);
             },
@@ -117,19 +123,25 @@ class _SudokuBody extends StatelessWidget {
 
   void _showGameOverDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text("😢 Game Over"),
-          content: const Text("You made too many mistakes"),
-          actions: [
-            TextButton(onPressed: (){
-              Navigator.pop(dialogContext);
-              Navigator.pop(context);
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("😢 Game Over"),
+        content: const Text("You made too many mistakes"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              final vm = context.read<SudokuViewModel>();
+
+              vm.isGameOver = false;
+              vm.isGameWon = false;
+
+              Navigator.of(dialogContext).pop();
+              Navigator.of(context).pop();
             },
-              child: const Text("OK"),
-            )
-          ],
-        )
+            child: const Text("OK"),
+          )
+        ],
+      ),
     );
   }
 }
