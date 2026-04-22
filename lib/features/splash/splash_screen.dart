@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sudoku_app/features/home/home_screen.dart';
+import 'package:sudoku_app/features/splash/widgets/app_title.dart';
+import 'package:sudoku_app/features/splash/widgets/background_pattern.dart';
+import 'package:sudoku_app/features/splash/widgets/sudoku_grid_animation.dart';
+import 'package:sudoku_app/features/splash/widgets/tagline.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<double> _fadeAnimation;
 
   static const _animationDuration = Duration(seconds: 2);
-  static const _navigationDelay = Duration(seconds: 3);
+  static const _navigationDelay = Duration(seconds: 4);
 
   @override
   void initState() {
@@ -36,16 +40,33 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateToHome() {
     Future.delayed(_navigationDelay, () {
       if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 600),
+          pageBuilder: (_, __, ___) => const HomeScreen(),
+          transitionsBuilder: (_, animation, __, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _SplashBody(fadeAnimation: _fadeAnimation));
+    return Scaffold(
+      body: Stack(
+          children: [
+            const BackgroundPattern(),
+            _SplashBody(fadeAnimation: _fadeAnimation)
+          ]
+    ),
+    );
   }
 
   @override
@@ -63,34 +84,21 @@ class _SplashBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.deepPurple],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Center(
-        child: FadeTransition(opacity: fadeAnimation, child: const _AppTitle()),
+    return Center(
+      child: FadeTransition(
+          opacity: fadeAnimation,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SudokuGridAnimation(),
+              SizedBox(height: 30,),
+              AppTitle(),
+              SizedBox(height: 15,),
+              Tagline(),
+            ],
+          )
       ),
     );
   }
 }
 
-class _AppTitle extends StatelessWidget {
-  const _AppTitle();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text(
-      "Sudoku",
-      style: TextStyle(
-        fontSize: 42,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        letterSpacing: 2,
-      ),
-    );
-  }
-}
