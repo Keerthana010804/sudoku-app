@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sudoku_app/features/splash/widgets/background_pattern.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 import 'package:sudoku_app/features/sudoku/widgets/difficulty_bottom_sheet.dart';
 
@@ -18,7 +19,33 @@ class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(title: const Text("Sudoku"), centerTitle: true);
+    return AppBar(
+      backgroundColor: const Color(0xFF0F172A),
+      elevation: 0,
+      leading: Icon(Icons.extension,  color: Colors.white70,),
+      centerTitle: true,
+      title: Text(
+        "Sudoku Master",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.5,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              color: Colors.blueAccent,
+              blurRadius: 6,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {},
+        ),
+      ],
+    );
   }
 
   @override
@@ -32,16 +59,17 @@ class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SudokuViewModel>();
-    return Container(
-      width: double.infinity,
+    return Stack(
+      children: [
+        const BackgroundPattern(), // background layer
+        _buildContent(context, vm), // UI layer
+      ],
+    );
+  }
+
+  Widget _buildContent(BuildContext context, SudokuViewModel vm) {
+    return Padding(
       padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.deepPurple],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
       child: FutureBuilder<bool>(
         future: vm.hasSavedGame(),
         builder: (context, snapshot) {
@@ -52,27 +80,31 @@ class _HomeBody extends StatelessWidget {
           }
 
           final hasGame = snapshot.data!;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const _Title(),
-              const SizedBox(height: 40),
-              if (hasGame)
+
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const _Title(),
+                const SizedBox(height: 50),
+                if (hasGame) ...[
+                  _PrimaryButton(
+                    text: "Continue",
+                    onPressed: () async {
+                      await vm.loadGame();
+                      Navigator.pushNamed(context, '/game');
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
                 _PrimaryButton(
-                  text: "Continue",
-                  onPressed: () async {
-                    await vm.loadGame();
-                    Navigator.pushNamed(context, '/game');
+                  text: "New Game",
+                  onPressed: () {
+                    showDifficultyBottomSheet(context);
                   },
                 ),
-              if (hasGame) const SizedBox(height: 20),
-              _PrimaryButton(
-                text: "New Game",
-                onPressed: () {
-                  showDifficultyBottomSheet(context);
-                },
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -86,13 +118,26 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      "Welcome To Sudoku",
-      style: TextStyle(
-        fontSize: 26,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
+    return Column(
+      children: const [
+        Text(
+          "Welcome Back",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 2,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          "Ready to Solve?",
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white70,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -105,14 +150,36 @@ class _PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        elevation: 5,
+    return Container(
+      width: 220,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        gradient: const LinearGradient(
+          colors: [Colors.blueAccent, Colors.purpleAccent],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blueAccent.withValues(alpha:0.4),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
       ),
-      onPressed: onPressed,
-      child: Text(text, style: const TextStyle(fontSize: 18)),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 18, color: Colors.white),
+        ),
+      ),
     );
   }
 }
