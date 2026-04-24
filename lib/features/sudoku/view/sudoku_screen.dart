@@ -13,10 +13,28 @@ class SudokuScreen extends StatefulWidget {
 }
 
 class _SudokuScreenState extends State<SudokuScreen> {
+  late SudokuViewModel vm;
+
+  @override
+  void initState() {
+    super.initState();
+
+    vm = context.read<SudokuViewModel>();
+    vm.startTimer();
+  }
+
+  @override
+  void dispose() {
+    vm.stopTimer();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _SudokuAppBar(), body: _SudokuBody());
+    return Scaffold(
+      appBar: _SudokuAppBar(),
+      body: _SudokuBody(),
+    );
   }
 }
 

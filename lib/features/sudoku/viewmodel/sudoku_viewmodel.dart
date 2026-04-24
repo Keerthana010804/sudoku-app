@@ -28,8 +28,10 @@ class SudokuViewModel extends ChangeNotifier {
   bool isPencilMode = false;
   bool isGameOver = false;
   bool isGameWon = false;
+  bool _isTimerRunning = false;
 
   Timer? _timer;
+  Difficulty? currentDifficulty;
   int _seconds = 0;
   int get seconds => _seconds;
 
@@ -37,6 +39,19 @@ class SudokuViewModel extends ChangeNotifier {
     final minutes = (_seconds ~/ 60).toString().padLeft(2, '0');
     final remainingSeconds = (_seconds % 60).toString().padLeft(2, '0');
     return "$minutes:$remainingSeconds";
+  }
+
+  String get difficultyText {
+    switch (currentDifficulty) {
+      case Difficulty.easy:
+        return "Easy";
+      case Difficulty.medium:
+        return "Medium";
+      case Difficulty.hard:
+        return "Hard";
+      default:
+        return "Easy";
+    }
   }
 
   Set<String> errorCells = {};
@@ -212,9 +227,12 @@ class SudokuViewModel extends ChangeNotifier {
     }
   }
 
-  void startTimer(){
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer){
+  void startTimer() {
+    if (_isTimerRunning) return;
+
+    _isTimerRunning = true;
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _seconds++;
       notifyListeners();
     });
@@ -222,6 +240,7 @@ class SudokuViewModel extends ChangeNotifier {
 
   void stopTimer(){
     _timer?.cancel();
+    _isTimerRunning = false;
   }
 
   void resetTimer(){
@@ -237,6 +256,7 @@ class SudokuViewModel extends ChangeNotifier {
   }
 
   void newGame(Difficulty difficulty){
+    currentDifficulty = difficulty;
     List<List<int>> newBoard =
         List.generate(9, (_) => List.generate(9, (_) => 0));
     fillBoard(newBoard);
@@ -357,6 +377,7 @@ class SudokuViewModel extends ChangeNotifier {
     await prefs.setString("fixed", jsonEncode(isFixedCell));
     await prefs.setInt("seconds", _seconds);
     await prefs.setInt("mistakes", mistakes);
+    await prefs.setString("difficulty", currentDifficulty?.name ?? "easy");
 
     List<List<List<int>>> notesList = notes
       .map((row) => row.map((cell) => cell.toList()).toList())
@@ -398,8 +419,17 @@ class SudokuViewModel extends ChangeNotifier {
           .toList();
     }
 
+    final diffString = prefs.getString("difficulty");
+
+    if (diffString != null) {
+      currentDifficulty = Difficulty.values.firstWhere(
+            (e) => e.name == diffString,
+        orElse: () => Difficulty.easy,
+      );
+    }
+
     notifyListeners();
-    startTimer();
+    //startTimer();
     return true;
   }
 

@@ -82,31 +82,156 @@ class _HomeBody extends StatelessWidget {
           final hasGame = snapshot.data!;
 
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const _Title(),
-                const SizedBox(height: 50),
-                if (hasGame) ...[
-                  _PrimaryButton(
-                    text: "Continue",
-                    onPressed: () async {
-                      await vm.loadGame();
-                      Navigator.pushNamed(context, '/game');
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                ],
-                _PrimaryButton(
-                  text: "New Game",
-                  onPressed: () {
-                    showDifficultyBottomSheet(context);
-                  },
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 600),
+              opacity: 1,
+              child: AnimatedSlide(
+                duration: const Duration(milliseconds: 600),
+                offset: Offset(0, 0.1),
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _dailyChallengeCard(),
+                    SizedBox(height: 30),
+                    const _Title(),
+                    const SizedBox(height: 30),
+                    if (hasGame) ...[
+                      _resumeCard(
+                        difficulty: vm.difficultyText,
+                        time: vm.formattedTime,
+                        onTap: () async {
+                          await vm.loadGame();
+                          Navigator.pushNamed(context, '/game');
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                    _PrimaryButton(
+                      text: "New Game",
+                      onPressed: () {
+                        showDifficultyBottomSheet(context);
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _dailyChallengeCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [Colors.orange, Colors.deepOrange],
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Daily Challenge 🔥",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                "Solve today’s puzzle",
+                style: TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text(
+                "Play",
+              style: TextStyle(
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.bold
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _resumeCard({
+    required String difficulty,
+    required String time,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withValues(alpha:0.05),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Resume Game",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Difficulty: $difficulty",
+                style: TextStyle(color: Colors.white70),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: const LinearGradient(
+                    colors: [Colors.orange, Colors.deepOrange],
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: onTap,
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Text(
+                        "Continue",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "Time: $time",
+            style: TextStyle(color: Colors.white70),
+          ),
+        ],
       ),
     );
   }
@@ -155,11 +280,11 @@ class _PrimaryButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         gradient: const LinearGradient(
-          colors: [Colors.blueAccent, Colors.purpleAccent],
+          colors: [Colors.orange, Colors.deepOrange],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.blueAccent.withValues(alpha:0.4),
+            color: Colors.orangeAccent.withValues(alpha:0.4),
             blurRadius: 10,
             spreadRadius: 1,
           ),
