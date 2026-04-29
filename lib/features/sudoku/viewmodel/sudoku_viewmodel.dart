@@ -25,6 +25,7 @@ class SudokuViewModel extends ChangeNotifier {
   int mistakes = 0;
   final int maxMistakes = 3;
 
+  bool isResumedGame = false;
   bool isPencilMode = false;
   bool isGameOver = false;
   bool isGameWon = false;
@@ -246,7 +247,7 @@ class SudokuViewModel extends ChangeNotifier {
   void resetTimer(){
     _timer?.cancel();
     _seconds = 0;
-    startTimer();
+    _isTimerRunning = false;
   }
 
   @override
@@ -256,6 +257,7 @@ class SudokuViewModel extends ChangeNotifier {
   }
 
   void newGame(Difficulty difficulty){
+    isResumedGame = false;
     currentDifficulty = difficulty;
     List<List<int>> newBoard =
         List.generate(9, (_) => List.generate(9, (_) => 0));
@@ -391,6 +393,7 @@ class SudokuViewModel extends ChangeNotifier {
 
     final boardData = prefs.getString("board");
     if (boardData == null) return false;
+    isResumedGame = true;
 
     board = (jsonDecode(boardData) as List)
       .map((row) => List<int>.from(row))

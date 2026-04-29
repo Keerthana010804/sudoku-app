@@ -20,7 +20,13 @@ class _SudokuScreenState extends State<SudokuScreen> {
     super.initState();
 
     vm = context.read<SudokuViewModel>();
-    vm.startTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (vm.isResumedGame) {
+        vm.startTimer();
+      } else {
+        _showStartDialog(context);
+      }
+    });
   }
 
   @override
@@ -34,6 +40,30 @@ class _SudokuScreenState extends State<SudokuScreen> {
     return Scaffold(
       appBar: _SudokuAppBar(),
       body: _SudokuBody(),
+    );
+  }
+
+  void _showStartDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // user must click button
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text("Ready to Start?"),
+          content: const Text(
+            "Take your time and get ready.\nTap start when you're ready.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                vm.startTimer();
+              },
+              child: const Text("Start Game"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
