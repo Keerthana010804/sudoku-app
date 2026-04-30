@@ -30,6 +30,7 @@ class SudokuViewModel extends ChangeNotifier {
   bool isGameOver = false;
   bool isGameWon = false;
   bool _isTimerRunning = false;
+  bool isPaused = false;
 
   Timer? _timer;
   Difficulty? currentDifficulty;
@@ -235,6 +236,7 @@ class SudokuViewModel extends ChangeNotifier {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _seconds++;
+      saveGame();
       notifyListeners();
     });
   }
@@ -380,6 +382,7 @@ class SudokuViewModel extends ChangeNotifier {
     await prefs.setInt("seconds", _seconds);
     await prefs.setInt("mistakes", mistakes);
     await prefs.setString("difficulty", currentDifficulty?.name ?? "easy");
+    await prefs.setBool("isPaused", isPaused);
 
     List<List<List<int>>> notesList = notes
       .map((row) => row.map((cell) => cell.toList()).toList())
@@ -394,7 +397,7 @@ class SudokuViewModel extends ChangeNotifier {
     final boardData = prefs.getString("board");
     if (boardData == null) return false;
     isResumedGame = true;
-
+    isPaused = prefs.getBool("isPaused") ?? false;
     board = (jsonDecode(boardData) as List)
       .map((row) => List<int>.from(row))
       .toList();
@@ -434,6 +437,22 @@ class SudokuViewModel extends ChangeNotifier {
     notifyListeners();
     //startTimer();
     return true;
+  }
+
+  void pauseGame() {
+    if (!_isTimerRunning) return;
+    stopTimer();
+    isPaused = true;
+    saveGame();
+    notifyListeners();
+  }
+
+  void resumeGame() {
+    if(isPaused) {
+      startTimer();
+      isPaused = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> hasSavedGame() async {
