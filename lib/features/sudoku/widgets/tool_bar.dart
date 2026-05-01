@@ -18,13 +18,20 @@ class ToolBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: 70,
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withValues(alpha: 0.05),
+        border: Border.all(color: Colors.white24),
+      ),
       child: Row(
         children: [
           _buildToolButton(Icons.undo, "Undo", onUndo),
           _buildToolButton(Icons.backspace, "Erase", onErase),
-          _buildToolButton(Icons.edit, "Pencil", onPencil, isActive: isPencilMode),
+          _buildToolButton(Icons.edit, "Pencil", onPencil,
+              isActive: isPencilMode),
           _buildToolButton(Icons.lightbulb, "Hint", onHint),
         ],
       ),
@@ -37,9 +44,10 @@ Widget _buildToolButton(
     String label,
     VoidCallback onTap, {
       bool isActive = false,
-}) {
+    }) {
   return Expanded(
-    child: Padding(padding: EdgeInsets.symmetric(horizontal: 4),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -47,10 +55,13 @@ Widget _buildToolButton(
           onTap: onTap,
           child: Ink(
             decoration: BoxDecoration(
-              color: isActive
-                  ? Colors.blue.withValues(alpha: 0.2)
-                  : Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
+              gradient: isActive
+                  ? const LinearGradient(
+                colors: [Colors.orange, Colors.deepOrange],
+              )
+                  : null,
+              color: isActive ? null : Colors.transparent,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -58,14 +69,14 @@ Widget _buildToolButton(
                 Icon(
                   icon,
                   size: 22,
-                  color: isActive ? Colors.blue : Colors.black87,
+                  color: isActive ? Colors.white : Colors.white70,
                 ),
-                const SizedBox(height: 4,),
+                const SizedBox(height: 4),
                 Text(
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isActive ? Colors.blue : Colors.black87,
+                    color: isActive ? Colors.white : Colors.white70,
                   ),
                 )
               ],

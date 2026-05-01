@@ -31,72 +31,71 @@ class SudokuCell extends StatelessWidget {
   });
 
   Color getCellColor(int row, int col) {
-    // errorCell highlight
+    // ❌ Error
     if (errorCells.contains("$row-$col")) {
-      return Colors.red.withValues(alpha: 0.4);
+      return Colors.red.withOpacity(0.35);
     }
-    // if number is selected
+
+    // 🟢 Same number highlight
     if (selectedNumber != null && board[row][col] == selectedNumber) {
-      return Colors.green.withValues(alpha: 0.3);
+      return Colors.green.withOpacity(0.25);
     }
-    // if no cell selected
+
     if (selectedRow == -1 || selectedCol == -1) {
-      return Colors.white;
+      return Colors.white.withOpacity(0.08);
     }
-    // selected cell
+
+    // 🎯 Selected cell
     if (row == selectedRow && col == selectedCol) {
-      return Colors.blue.withValues(alpha: 0.3);
+      return Colors.orange.withOpacity(0.35);
     }
-    // highLight selected numbers
+
     int selectedValue = board[selectedRow][selectedCol];
+
+    // 🟢 Same value
     if (selectedValue != 0 && board[row][col] == selectedValue) {
-      return Colors.green.withValues(alpha: 0.3);
+      return Colors.green.withOpacity(0.25);
     }
-    // same row
-    if (row == selectedRow) {
-      return Colors.blue.withValues(alpha: 0.08);
+
+    // 🔵 Row / Column / Box highlight
+    if (row == selectedRow ||
+        col == selectedCol ||
+        ((row ~/ 3 == selectedRow ~/ 3) &&
+            (col ~/ 3 == selectedCol ~/ 3))) {
+      return Colors.blue.withOpacity(0.08);
     }
-    // same column
-    if (col == selectedCol) {
-      return Colors.blue.withValues(alpha: 0.08);
-    }
-    // same 3x3 box
-    if ((row ~/ 3 == selectedRow ~/ 3) && (col ~/ 3 == selectedCol ~/ 3)) {
-      return Colors.blue.withValues(alpha: 0.08);
-    }
-    return Colors.white;
+
+    return Colors.white.withOpacity(0.08);
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(4),
-      splashColor: Colors.blue.withValues(alpha: 0.2),
-      highlightColor: Colors.transparent,
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 150),
         decoration: BoxDecoration(
           color: getCellColor(row, col),
           border: Border(
             top: BorderSide(
-              color: Colors.grey.shade800,
+              color: Colors.black38,
               width: row % 3 == 0 ? 2 : 0.5,
             ),
             left: BorderSide(
-              color: Colors.grey.shade800,
+              color: Colors.black38,
               width: col % 3 == 0 ? 2 : 0.5,
             ),
             right: BorderSide(
-              color: Colors.grey.shade800,
+              color: Colors.black38,
               width: (col + 1) % 3 == 0 ? 2 : 0.5,
             ),
             bottom: BorderSide(
-              color: Colors.grey.shade800,
+              color: Colors.black38,
               width: (row + 1) % 3 == 0 ? 2 : 0.5,
             ),
           ),
         ),
+
         child: value != 0
             ? Center(
           child: Text(
@@ -105,8 +104,8 @@ class SudokuCell extends StatelessWidget {
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: isFixed
-                  ? Colors.black
-                  : Colors.blue,
+                  ? Colors.black54
+                  : Colors.orangeAccent,
             ),
           ),
         )
@@ -121,12 +120,10 @@ class SudokuCell extends StatelessWidget {
                     return Expanded(
                       child: Center(
                         child: Text(
-                          notes.contains(n)
-                              ? n.toString()
-                              : "",
-                          style: const TextStyle(
+                          notes.contains(n) ? n.toString() : "",
+                          style: TextStyle(
                             fontSize: 10,
-                            color: Colors.black87,
+                            color: Colors.black38,
                           ),
                         ),
                       ),

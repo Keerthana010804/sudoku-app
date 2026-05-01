@@ -25,34 +25,51 @@ class SudokuGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: 81,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 9,
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withValues(alpha: 0.05),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(12),
           ),
-          itemBuilder: (context, index) {
-            int row = index ~/ 9;
-            int col = index % 9;
+          child: Material(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 81,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 9,
+                ),
+                itemBuilder: (context, index) {
+                  int row = index ~/ 9;
+                  int col = index % 9;
 
-            int value = board[row][col];
-            return SudokuCell(
-                row: row,
-                col: col,
-                value: value,
-                notes: notes[row][col],
-                isFixed: isFixedCell[row][col],
-                isSelected: row == selectedRow && col == selectedCol,
-                selectedRow: selectedRow,
-                selectedCol: selectedCol,
-                errorCells: errorCells,
-                board: board,
-                onTap: () => onCellTap(row,col),
-            );
-          },
+                  return SudokuCell(
+                    row: row,
+                    col: col,
+                    value: board[row][col],
+                    notes: notes[row][col],
+                    isFixed: isFixedCell[row][col],
+                    isSelected: row == selectedRow && col == selectedCol,
+                    selectedRow: selectedRow,
+                    selectedCol: selectedCol,
+                    selectedNumber: selectedNumber,
+                    errorCells: errorCells,
+                    board: board,
+                    onTap: () => onCellTap(row, col),
+                  );
+                },
+              ),
+            ),
+          ),
         ),
       ),
     );

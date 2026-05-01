@@ -12,59 +12,69 @@ class NumberPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 150),
-      child: SizedBox(
-        height: 70,
-        child: Row(
-          children: List.generate(9, (index) {
-            int number = index + 1;
-            bool isSelected = selectedNumber == number;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(4),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () => onNumberTap(number),
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        color: isSelected ? null : Colors.white,
-                        gradient: isSelected
-                            ? const LinearGradient(
-                          colors: [Colors.orange, Colors.deepOrange],
-                        )
-                            : null,
-                        borderRadius: BorderRadius.circular(12),
-                        border: isSelected
+    return SizedBox(
+      height: 70,
+      child: Row(
+        children: List.generate(9, (index) {
+          int number = index + 1;
+          bool isSelected = selectedNumber == number;
+
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: GestureDetector(
+                onTap: () => onNumberTap(number),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+
+                    /// 🔹 Selected = Gradient Button (PrimaryButton style)
+                    gradient: isSelected
+                        ? const LinearGradient(
+                      colors: [Colors.orange, Colors.deepOrange],
+                    )
+                        : null,
+
+                    /// 🔹 Unselected = Glass style
+                    color: isSelected
                         ? null
-                        : Border.all(color: Colors.deepOrange,width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        : Colors.white.withOpacity(0.05),
+
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.transparent
+                          : Colors.white24,
+                    ),
+
+                    boxShadow: isSelected
+                        ? [
+                      BoxShadow(
+                        color: Colors.orangeAccent.withOpacity(0.4),
+                        blurRadius: 10,
+                        spreadRadius: 1,
                       ),
-                      child: Center(
-                        child: Text(
-                          number.toString(),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.deepOrange,
-                          ),
-                        ),
+                    ]
+                        : [],
+                  ),
+
+                  child: Center(
+                    child: Text(
+                      number.toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected
+                            ? Colors.white
+                            : Colors.white70,
                       ),
                     ),
                   ),
                 ),
               ),
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
