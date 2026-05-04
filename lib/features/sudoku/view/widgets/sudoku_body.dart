@@ -68,22 +68,27 @@ class SudokuBody extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 /// 🔹 Sudoku Grid
-                Expanded(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: SudokuGrid(
-                      board: vm.board,
-                      notes: vm.notes,
-                      selectedRow: vm.selectedRow,
-                      selectedCol: vm.selectedCol,
-                      onCellTap: vm.isPaused
-                          ? (_, __) {}
-                          : (row, col) {
-                        vm.selectedCell(row, col);
-                      },
-                      isFixedCell: vm.isFixedCell,
-                      selectedNumber: vm.selectedNumber,
-                      errorCells: vm.errorCells,
+                Flexible(
+                  child: Center(
+                    child: FittedBox(
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width - 80,
+                        height: MediaQuery.of(context).size.width - 80,
+                        child: SudokuGrid(
+                          board: vm.board,
+                          notes: vm.notes,
+                          selectedRow: vm.selectedRow,
+                          selectedCol: vm.selectedCol,
+                          onCellTap: vm.isPaused
+                              ? (_, __) {}
+                              : (row, col) {
+                            vm.selectedCell(row, col);
+                          },
+                          isFixedCell: vm.isFixedCell,
+                          selectedNumber: vm.selectedNumber,
+                          errorCells: vm.errorCells,
+                        ),
+                      ),
                     ),
                   ),
                 ),

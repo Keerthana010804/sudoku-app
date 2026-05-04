@@ -70,71 +70,79 @@ class SudokuCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        decoration: BoxDecoration(
-          color: getCellColor(row, col),
-          border: Border(
-            top: BorderSide(
-              color: Colors.black38,
-              width: row % 3 == 0 ? 2 : 0.5,
-            ),
-            left: BorderSide(
-              color: Colors.black38,
-              width: col % 3 == 0 ? 2 : 0.5,
-            ),
-            right: BorderSide(
-              color: Colors.black38,
-              width: (col + 1) % 3 == 0 ? 2 : 0.5,
-            ),
-            bottom: BorderSide(
-              color: Colors.black38,
-              width: (row + 1) % 3 == 0 ? 2 : 0.5,
-            ),
-          ),
-        ),
+    return LayoutBuilder(builder: (context, constraints) {
+      final cellSize = constraints.maxWidth;
 
-        child: value != 0
-            ? Center(
-          child: Text(
-            value.toString(),
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: isFixed
-                  ? Colors.black54
-                  : Colors.orangeAccent,
+      final mainFontSize = cellSize * 0.5;
+      final noteFontSize = cellSize * 0.22;
+      return InkWell(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          decoration: BoxDecoration(
+            color: getCellColor(row, col),
+            border: Border(
+              top: BorderSide(
+                color: Colors.black38,
+                width: row % 3 == 0 ? 2 : 0.5,
+              ),
+              left: BorderSide(
+                color: Colors.black38,
+                width: col % 3 == 0 ? 2 : 0.5,
+              ),
+              right: BorderSide(
+                color: Colors.black38,
+                width: (col + 1) % 3 == 0 ? 2 : 0.5,
+              ),
+              bottom: BorderSide(
+                color: Colors.black38,
+                width: (row + 1) % 3 == 0 ? 2 : 0.5,
+              ),
             ),
           ),
-        )
-            : Padding(
-          padding: const EdgeInsets.all(2),
-          child: Column(
-            children: List.generate(3, (r) {
-              return Expanded(
-                child: Row(
-                  children: List.generate(3, (c) {
-                    int n = r * 3 + c + 1;
-                    return Expanded(
-                      child: Center(
-                        child: Text(
-                          notes.contains(n) ? n.toString() : "",
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.black38,
+
+          child: value != 0
+              ? Center(
+            child: Text(
+              value.toString(),
+              style: TextStyle(
+                fontSize: mainFontSize,
+                fontWeight: FontWeight.bold,
+                color: isFixed
+                    ? Colors.black54
+                    : Colors.orangeAccent,
+              ),
+            ),
+          )
+              : Padding(
+            padding: const EdgeInsets.all(2),
+            child: Column(
+              children: List.generate(3, (r) {
+                return Expanded(
+                  child: Row(
+                    children: List.generate(3, (c) {
+                      int n = r * 3 + c + 1;
+                      return Expanded(
+                        child: Center(
+                          child: Text(
+                            notes.contains(n) ? n.toString() : "",
+                            style: TextStyle(
+                              fontSize: noteFontSize,
+                              color: Colors.black38,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  }),
-                ),
-              );
-            }),
+                      );
+                    }),
+                  ),
+                );
+              }),
+            ),
           ),
         ),
-      ),
+      );
+    }
     );
+
   }
 }
