@@ -57,7 +57,9 @@ class SudokuBody extends StatelessWidget {
                 /// 🔹 Timer Card
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 16),
+                    vertical: 10,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(12),
@@ -82,8 +84,8 @@ class SudokuBody extends StatelessWidget {
                           onCellTap: vm.isPaused
                               ? (_, __) {}
                               : (row, col) {
-                            vm.selectedCell(row, col);
-                          },
+                                  vm.selectedCell(row, col);
+                                },
                           isFixedCell: vm.isFixedCell,
                           selectedNumber: vm.selectedNumber,
                           errorCells: vm.errorCells,
@@ -102,6 +104,7 @@ class SudokuBody extends StatelessWidget {
                   onPencil: vm.isPaused ? () {} : vm.togglePencil,
                   onHint: vm.isPaused ? () {} : vm.giveHint,
                   isPencilMode: vm.isPencilMode,
+                  hintsLeft: vm.hintsLeft,
                 ),
 
                 const SizedBox(height: 20),

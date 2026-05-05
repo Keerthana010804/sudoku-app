@@ -6,6 +6,7 @@ class ToolBar extends StatelessWidget {
   final VoidCallback onPencil;
   final VoidCallback onHint;
   final bool isPencilMode;
+  final int hintsLeft;
 
   const ToolBar({
     super.key,
@@ -14,6 +15,7 @@ class ToolBar extends StatelessWidget {
     required this.onPencil,
     required this.onHint,
     required this.isPencilMode,
+    required this.hintsLeft,
   });
 
   @override
@@ -32,7 +34,11 @@ class ToolBar extends StatelessWidget {
           _buildToolButton(Icons.backspace, "Erase", onErase),
           _buildToolButton(Icons.edit, "Pencil", onPencil,
               isActive: isPencilMode),
-          _buildToolButton(Icons.lightbulb, "Hint", onHint),
+          _buildToolButton(
+            Icons.lightbulb,
+            "Hint ($hintsLeft)",
+            hintsLeft > 0 ? onHint : () {},
+          ),
         ],
       ),
     );

@@ -24,6 +24,8 @@ class SudokuViewModel extends ChangeNotifier {
   int? selectedNumber;
   int mistakes = 0;
   final int maxMistakes = 3;
+  int hintsLeft = 5;
+  final int maxHints = 5;
 
   bool isResumedGame = false;
   bool isPencilMode = false;
@@ -131,9 +133,14 @@ class SudokuViewModel extends ChangeNotifier {
   void giveHint() {
     if (selectedRow == -1 || selectedCol == -1) return;
 
+    if(isFixedCell[selectedRow][selectedCol]) return;
+
+    if(hintsLeft <= 0) return;
+
     if (board[selectedRow][selectedCol] != 0) return;
 
     board[selectedRow][selectedCol] = solution[selectedRow][selectedCol];
+    hintsLeft--;
     saveGame();
     notifyListeners();
   }
@@ -145,6 +152,7 @@ class SudokuViewModel extends ChangeNotifier {
 
   void erase() {
     if (selectedRow == -1 || selectedCol == -1) return;
+    if(isFixedCell[selectedRow][selectedCol]) return;
 
     int previousValue = board[selectedRow][selectedCol];
     if (previousValue != 0) {
@@ -168,6 +176,7 @@ class SudokuViewModel extends ChangeNotifier {
 
     int row = lastMove["row"]!;
     int col = lastMove["col"]!;
+    if(isFixedCell[row][col]) return;
     int value = lastMove["value"]!;
     int prevMistakes = lastMove["mistakes"] ?? mistakes;
 
@@ -259,6 +268,7 @@ class SudokuViewModel extends ChangeNotifier {
   }
 
   void newGame(Difficulty difficulty){
+    hintsLeft =maxHints;
     isResumedGame = false;
     currentDifficulty = difficulty;
     List<List<int>> newBoard =
@@ -383,6 +393,7 @@ class SudokuViewModel extends ChangeNotifier {
     await prefs.setInt("mistakes", mistakes);
     await prefs.setString("difficulty", currentDifficulty?.name ?? "easy");
     await prefs.setBool("isPaused", isPaused);
+    await prefs.setInt("hintsLeft", hintsLeft);
 
     List<List<List<int>>> notesList = notes
       .map((row) => row.map((cell) => cell.toList()).toList())
@@ -398,6 +409,7 @@ class SudokuViewModel extends ChangeNotifier {
     if (boardData == null) return false;
     isResumedGame = true;
     isPaused = prefs.getBool("isPaused") ?? false;
+    hintsLeft = prefs.getInt("hintsLeft") ?? 5;
     board = (jsonDecode(boardData) as List)
       .map((row) => List<int>.from(row))
       .toList();
