@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sudoku_app/features/sudoku/view/sudoku_screen.dart';
+import 'package:sudoku_app/features/sudoku/view/widgets/dialogs/confirm_dialog.dart';
 import 'package:sudoku_app/features/sudoku/viewmodel/sudoku_viewmodel.dart';
 
 void showDifficultyBottomSheet(BuildContext context) {
@@ -125,37 +126,7 @@ Future<void> handleDifficultySelection({
   Navigator.pop(sheetContext);
 
   if (hasGame) {
-    showDialog(
-      context: parentContext,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text("Start New Game?"),
-        content: const Text(
-          "Your current progress will be lost.",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-            },
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              vm.clearSavedGame();
-              vm.newGame(difficulty);
-              Navigator.push(
-                parentContext,
-                MaterialPageRoute(
-                  builder: (_) => const SudokuScreen(),
-                ),
-              );
-            },
-            child: const Text("Yes"),
-          ),
-        ],
-      ),
-    );
+    showNewGameConfirmDialog(parentContext, vm, difficulty);
   } else {
     vm.newGame(difficulty);
     Navigator.push(
