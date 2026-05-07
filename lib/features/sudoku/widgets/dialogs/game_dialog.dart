@@ -20,10 +20,14 @@ class GameDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 30),
-        padding: const EdgeInsets.all(24),
+        margin: EdgeInsets.symmetric(horizontal: size.width * 0.08),
+        padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.06,
+          vertical: size.height * 0.03,
+        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: const Color(0xFF1E293B),
@@ -36,43 +40,46 @@ class GameDialog extends StatelessWidget {
             ),
           ],
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 60, color: iconColor),
-              const SizedBox(height: 16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: size.width * 0.15, color: iconColor),
+                SizedBox(height: size.height * 0.02),
 
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: size.width * 0.055,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 10),
+                SizedBox(height: size.height * 0.012),
 
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
+                Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: size.width * 0.035,
+                  ),
                 ),
-              ),
 
-              if (extraContent != null) ...[
-                const SizedBox(height: 8),
-                extraContent!,
+                if (extraContent != null) ...[
+                  SizedBox(height: size.height * 0.01),
+                  extraContent!,
+                ],
+
+                SizedBox(height: size.height * 0.03),
+
+                Row(children: actions),
               ],
-
-              const SizedBox(height: 24),
-
-              Row(children: actions),
-            ],
+            ),
           ),
         ),
       ),
