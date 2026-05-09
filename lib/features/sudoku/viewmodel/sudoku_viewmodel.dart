@@ -487,6 +487,16 @@ class SudokuViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  int getRemainingCount(int number) {
+    int count = 0;
+
+    for(var row in board) {
+      count += row.where((cell) => cell == number).length;
+    }
+
+    return 9 - count;
+  }
+
   void removeNotes(int row, int col, int number) {
     // remove from row
     for (int c = 0; c < 9; c++) {

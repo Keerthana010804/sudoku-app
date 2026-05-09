@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class NumberPad extends StatelessWidget {
   final Function(int) onNumberTap;
   final int? selectedNumber;
+  final int Function(int) getRemainingCount;
 
   const NumberPad({
     super.key,
     required this.onNumberTap,
     required this.selectedNumber,
+    required this.getRemainingCount,
   });
 
   @override
@@ -17,6 +19,7 @@ class NumberPad extends StatelessWidget {
       child: Row(
         children: List.generate(9, (index) {
           int number = index + 1;
+          int remaining = getRemainingCount(number);
           bool isSelected = selectedNumber == number;
 
           return Expanded(
@@ -58,17 +61,32 @@ class NumberPad extends StatelessWidget {
                         : [],
                   ),
 
-                  child: Center(
-                    child: Text(
-                      number.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected
-                            ? Colors.white
-                            : Colors.white70,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        number.toString(),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected
+                              ? Colors.white
+                              : Colors.white70,
+                        ),
                       ),
-                    ),
+
+                      const SizedBox(height: 2),
+
+                      Text(
+                        "$remaining",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isSelected
+                              ? Colors.white70
+                              : Colors.white54,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

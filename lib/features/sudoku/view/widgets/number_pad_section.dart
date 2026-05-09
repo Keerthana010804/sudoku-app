@@ -21,6 +21,7 @@ class NumberPadSection extends StatelessWidget {
         ),
         child: NumberPad(
           selectedNumber: vm.selectedNumber,
+          getRemainingCount: vm.getRemainingCount,
           onNumberTap: (number) {
             final isValid = vm.enterNumber(number);
             if (!isValid) {
