@@ -17,8 +17,12 @@ void showStartDialog(BuildContext context, SudokuViewModel vm) {
           child: PrimaryButton(
             text: "Start Game",
             onPressed: () {
+              vm.showBoardAnimation = false;
               Navigator.pop(context);
-              vm.startTimer();
+              Future.delayed(const Duration(milliseconds: 100), () {
+                vm.startBoardAnimation();
+                vm.startTimer();
+              });
             },
           ),
         ),

@@ -89,6 +89,7 @@ class SudokuBody extends StatelessWidget {
                           isFixedCell: vm.isFixedCell,
                           selectedNumber: vm.selectedNumber,
                           errorCells: vm.errorCells,
+                          showAnimation: vm.showBoardAnimation,
                         ),
                       ),
                     ),

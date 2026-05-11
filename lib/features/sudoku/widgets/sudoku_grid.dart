@@ -10,6 +10,7 @@ class SudokuGrid extends StatelessWidget {
   final List<List<bool>> isFixedCell;
   final int? selectedNumber;
   final Set<String> errorCells;
+  final bool showAnimation;
 
   const SudokuGrid({
     super.key,
@@ -21,6 +22,7 @@ class SudokuGrid extends StatelessWidget {
     required this.isFixedCell,
     required this.selectedNumber,
     required this.errorCells,
+    required this.showAnimation,
   });
 
   @override
@@ -65,6 +67,8 @@ class SudokuGrid extends StatelessWidget {
                     errorCells: errorCells,
                     board: board,
                     onTap: () => onCellTap(row, col),
+                    animationDelay: (col * 9 + row) * 18,
+                    showAnimation: showAnimation,
                   );
                 },
               ),

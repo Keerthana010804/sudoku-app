@@ -33,6 +33,7 @@ class SudokuViewModel extends ChangeNotifier {
   bool isGameWon = false;
   bool _isTimerRunning = false;
   bool isPaused = false;
+  bool showBoardAnimation = false;
 
   Timer? _timer;
   Difficulty? currentDifficulty;
@@ -268,6 +269,7 @@ class SudokuViewModel extends ChangeNotifier {
   }
 
   void newGame(Difficulty difficulty){
+    showBoardAnimation = false;
     hintsLeft =maxHints;
     isResumedGame = false;
     currentDifficulty = difficulty;
@@ -515,5 +517,10 @@ class SudokuViewModel extends ChangeNotifier {
         notes[r][c].remove(number);
       }
     }
+  }
+
+  void startBoardAnimation() {
+    showBoardAnimation = true;
+    notifyListeners();
   }
 }

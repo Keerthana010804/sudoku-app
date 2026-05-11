@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class SudokuCell extends StatelessWidget {
+class SudokuCell extends StatefulWidget {
   final int row;
   final int col;
   final int value;
@@ -13,6 +13,8 @@ class SudokuCell extends StatelessWidget {
   final Set<String> errorCells;
   final List<List<int>> board;
   final VoidCallback onTap;
+  final bool showAnimation;
+  final int animationDelay;
 
   const SudokuCell({
     super.key,
@@ -28,44 +30,93 @@ class SudokuCell extends StatelessWidget {
     required this.errorCells,
     required this.board,
     required this.onTap,
+    required this.showAnimation,
+    required this.animationDelay,
   });
 
+  @override
+  State<SudokuCell> createState() => _SudokuCellState();
+}
+
+class _SudokuCellState extends State<SudokuCell>
+    with SingleTickerProviderStateMixin{
   Color getCellColor(int row, int col) {
     // ❌ Error
-    if (errorCells.contains("$row-$col")) {
+    if (widget.errorCells.contains("$row-$col")) {
       return Colors.red.withOpacity(0.35);
     }
 
     // 🟢 Same number highlight
-    if (selectedNumber != null && board[row][col] == selectedNumber) {
+    if (widget.selectedNumber != null && widget.board[row][col] == widget.selectedNumber) {
       return Colors.green.withOpacity(0.25);
     }
 
-    if (selectedRow == -1 || selectedCol == -1) {
+    if (widget.selectedRow == -1 || widget.selectedCol == -1) {
       return Colors.white.withOpacity(0.08);
     }
 
     // 🎯 Selected cell
-    if (row == selectedRow && col == selectedCol) {
+    if (row == widget.selectedRow && col == widget.selectedCol) {
       return Colors.orange.withOpacity(0.35);
     }
 
-    int selectedValue = board[selectedRow][selectedCol];
+    int selectedValue = widget.board[widget.selectedRow][widget.selectedCol];
 
     // 🟢 Same value
-    if (selectedValue != 0 && board[row][col] == selectedValue) {
+    if (selectedValue != 0 && widget.board[row][col] == selectedValue) {
       return Colors.green.withOpacity(0.25);
     }
 
     // 🔵 Row / Column / Box highlight
-    if (row == selectedRow ||
-        col == selectedCol ||
-        ((row ~/ 3 == selectedRow ~/ 3) &&
-            (col ~/ 3 == selectedCol ~/ 3))) {
+    if (row == widget.selectedRow ||
+        col == widget.selectedCol ||
+        ((row ~/ 3 == widget.selectedRow ~/ 3) &&
+            (col ~/ 3 == widget.selectedCol ~/ 3))) {
       return Colors.blue.withOpacity(0.08);
     }
 
     return Colors.white.withOpacity(0.08);
+  }
+
+  bool visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Fixed cells start hidden
+    if (widget.isFixed && widget.value != 0) {
+      visible = false;
+    } else {
+      // Player cells remain visible
+      visible = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SudokuCell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.showAnimation &&
+        !oldWidget.showAnimation &&
+        widget.isFixed &&
+        widget.value != 0) {
+
+      setState(() {
+        visible = false;
+      });
+
+      Future.delayed(
+        Duration(milliseconds: widget.animationDelay),
+            () {
+          if (mounted) {
+            setState(() {
+              visible = true;
+            });
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -76,41 +127,58 @@ class SudokuCell extends StatelessWidget {
       final mainFontSize = cellSize * 0.5;
       final noteFontSize = cellSize * 0.22;
       return InkWell(
-        onTap: onTap,
+        onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
-            color: getCellColor(row, col),
+            color: getCellColor(widget.row, widget.col),
             border: Border(
               top: BorderSide(
                 color: Colors.black38,
-                width: row % 3 == 0 ? 2 : 0.5,
+                width: widget.row % 3 == 0 ? 2 : 0.5,
               ),
               left: BorderSide(
                 color: Colors.black38,
-                width: col % 3 == 0 ? 2 : 0.5,
+                width: widget.col % 3 == 0 ? 2 : 0.5,
               ),
               right: BorderSide(
                 color: Colors.black38,
-                width: (col + 1) % 3 == 0 ? 2 : 0.5,
+                width: (widget.col + 1) % 3 == 0 ? 2 : 0.5,
               ),
               bottom: BorderSide(
                 color: Colors.black38,
-                width: (row + 1) % 3 == 0 ? 2 : 0.5,
+                width: (widget.row + 1) % 3 == 0 ? 2 : 0.5,
               ),
             ),
           ),
 
-          child: value != 0
-              ? Center(
+          child: widget.value != 0
+              ? widget.isFixed
+              ? AnimatedOpacity(
+            duration: const Duration(milliseconds: 180),
+            opacity: visible ? 1 : 0,
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 180),
+              scale: visible ? 1 : 0.3,
+              child: Center(
+                child: Text(
+                  widget.value.toString(),
+                  style: TextStyle(
+                    fontSize: mainFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+            ),
+          )
+              : Center(
             child: Text(
-              value.toString(),
+              widget.value.toString(),
               style: TextStyle(
                 fontSize: mainFontSize,
                 fontWeight: FontWeight.bold,
-                color: isFixed
-                    ? Colors.black54
-                    : Colors.orangeAccent,
+                color: Colors.orangeAccent,
               ),
             ),
           )
@@ -125,7 +193,7 @@ class SudokuCell extends StatelessWidget {
                       return Expanded(
                         child: Center(
                           child: Text(
-                            notes.contains(n) ? n.toString() : "",
+                            widget.notes.contains(n) ? n.toString() : "",
                             style: TextStyle(
                               fontSize: noteFontSize,
                               color: Colors.black38,
