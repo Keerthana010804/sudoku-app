@@ -128,83 +128,100 @@ class _SudokuCellState extends State<SudokuCell>
       final noteFontSize = cellSize * 0.22;
       return InkWell(
         onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          decoration: BoxDecoration(
-            color: getCellColor(widget.row, widget.col),
-            border: Border(
-              top: BorderSide(
-                color: Colors.black38,
-                width: widget.row % 3 == 0 ? 2 : 0.5,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          opacity: visible ? 1 : 0,
+          child: AnimatedScale(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutBack,
+            scale: visible ? 1 : 0.6,
+          
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 350),
+              decoration: BoxDecoration(
+                boxShadow: visible
+                    ? []
+                    : [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.8),
+                    blurRadius: 24,
+                    spreadRadius: 2,
+                  ),
+                  BoxShadow(
+                    color: Colors.blueAccent.withOpacity(0.4),
+                    blurRadius: 30,
+                    spreadRadius: 1,
+                  ),
+                ],
+                color: getCellColor(widget.row, widget.col),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.black38,
+                    width: widget.row % 3 == 0 ? 2 : 0.5,
+                  ),
+                  left: BorderSide(
+                    color: Colors.black38,
+                    width: widget.col % 3 == 0 ? 2 : 0.5,
+                  ),
+                  right: BorderSide(
+                    color: Colors.black38,
+                    width: (widget.col + 1) % 3 == 0 ? 2 : 0.5,
+                  ),
+                  bottom: BorderSide(
+                    color: Colors.black38,
+                    width: (widget.row + 1) % 3 == 0 ? 2 : 0.5,
+                  ),
+                ),
               ),
-              left: BorderSide(
-                color: Colors.black38,
-                width: widget.col % 3 == 0 ? 2 : 0.5,
-              ),
-              right: BorderSide(
-                color: Colors.black38,
-                width: (widget.col + 1) % 3 == 0 ? 2 : 0.5,
-              ),
-              bottom: BorderSide(
-                color: Colors.black38,
-                width: (widget.row + 1) % 3 == 0 ? 2 : 0.5,
-              ),
-            ),
-          ),
-
-          child: widget.value != 0
-              ? widget.isFixed
-              ? AnimatedOpacity(
-            duration: const Duration(milliseconds: 180),
-            opacity: visible ? 1 : 0,
-            child: AnimatedScale(
-              duration: const Duration(milliseconds: 180),
-              scale: visible ? 1 : 0.3,
-              child: Center(
+            
+              child: widget.value != 0
+                  ? widget.isFixed
+                  ? Center(
+                    child: Text(
+                      widget.value.toString(),
+                      style: TextStyle(
+                        fontSize: mainFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  )
+                  : Center(
                 child: Text(
                   widget.value.toString(),
                   style: TextStyle(
                     fontSize: mainFontSize,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black54,
+                    color: Colors.orangeAccent,
                   ),
                 ),
-              ),
-            ),
-          )
-              : Center(
-            child: Text(
-              widget.value.toString(),
-              style: TextStyle(
-                fontSize: mainFontSize,
-                fontWeight: FontWeight.bold,
-                color: Colors.orangeAccent,
-              ),
-            ),
-          )
-              : Padding(
-            padding: const EdgeInsets.all(2),
-            child: Column(
-              children: List.generate(3, (r) {
-                return Expanded(
-                  child: Row(
-                    children: List.generate(3, (c) {
-                      int n = r * 3 + c + 1;
-                      return Expanded(
-                        child: Center(
-                          child: Text(
-                            widget.notes.contains(n) ? n.toString() : "",
-                            style: TextStyle(
-                              fontSize: noteFontSize,
-                              color: Colors.black38,
+              )
+                  : Padding(
+                padding: const EdgeInsets.all(2),
+                child: Column(
+                  children: List.generate(3, (r) {
+                    return Expanded(
+                      child: Row(
+                        children: List.generate(3, (c) {
+                          int n = r * 3 + c + 1;
+                          return Expanded(
+                            child: Center(
+                              child: Text(
+                                widget.notes.contains(n) ? n.toString() : "",
+                                style: TextStyle(
+                                  fontSize: noteFontSize,
+                                  color: Colors.black38,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                );
-              }),
+                          );
+                        }),
+                      ),
+                    );
+                  }),
+                ),
+              ),
             ),
           ),
         ),

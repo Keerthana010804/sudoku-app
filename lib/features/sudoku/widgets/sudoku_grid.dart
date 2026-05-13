@@ -67,7 +67,7 @@ class SudokuGrid extends StatelessWidget {
                     errorCells: errorCells,
                     board: board,
                     onTap: () => onCellTap(row, col),
-                    animationDelay: (col * 9 + row) * 18,
+                    animationDelay: (col * 9 + row) * 14,
                     showAnimation: showAnimation,
                   );
                 },
