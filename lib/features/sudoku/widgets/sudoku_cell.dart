@@ -38,8 +38,7 @@ class SudokuCell extends StatefulWidget {
   State<SudokuCell> createState() => _SudokuCellState();
 }
 
-class _SudokuCellState extends State<SudokuCell>
-    with SingleTickerProviderStateMixin{
+class _SudokuCellState extends State<SudokuCell> {
   Color getCellColor(int row, int col) {
     // ❌ Error
     if (widget.errorCells.contains("$row-$col")) {
@@ -52,7 +51,7 @@ class _SudokuCellState extends State<SudokuCell>
     }
 
     if (widget.selectedRow == -1 || widget.selectedCol == -1) {
-      return Colors.white.withOpacity(0.08);
+      return Colors.white.withOpacity(0.8);
     }
 
     // 🎯 Selected cell
@@ -75,7 +74,7 @@ class _SudokuCellState extends State<SudokuCell>
       return Colors.blue.withOpacity(0.08);
     }
 
-    return Colors.white.withOpacity(0.08);
+    return Colors.white.withOpacity(0.8);
   }
 
   bool visible = false;
@@ -84,27 +83,16 @@ class _SudokuCellState extends State<SudokuCell>
   void initState() {
     super.initState();
 
-    // Fixed cells start hidden
+    // If board animation is not started,
+    // keep cells hidden
+    if (!widget.showAnimation) {
+      visible = false;
+      return;
+    }
+
+    // Animate fixed cells
     if (widget.isFixed && widget.value != 0) {
       visible = false;
-    } else {
-      // Player cells remain visible
-      visible = true;
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant SudokuCell oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.showAnimation &&
-        !oldWidget.showAnimation &&
-        widget.isFixed &&
-        widget.value != 0) {
-
-      setState(() {
-        visible = false;
-      });
 
       Future.delayed(
         Duration(milliseconds: widget.animationDelay),
@@ -116,6 +104,43 @@ class _SudokuCellState extends State<SudokuCell>
           }
         },
       );
+    } else {
+      visible = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SudokuCell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Board animation started
+    if (widget.showAnimation != oldWidget.showAnimation &&
+        widget.showAnimation) {
+
+      // Fixed cells animate
+      if (widget.isFixed && widget.value != 0) {
+
+        setState(() {
+          visible = false;
+        });
+
+        Future.delayed(
+          Duration(milliseconds: widget.animationDelay),
+              () {
+            if (mounted) {
+              setState(() {
+                visible = true;
+              });
+            }
+          },
+        );
+
+      } else {
+        // Other cells should become visible immediately
+        setState(() {
+          visible = true;
+        });
+      }
     }
   }
 
@@ -128,99 +153,105 @@ class _SudokuCellState extends State<SudokuCell>
       final noteFontSize = cellSize * 0.22;
       return InkWell(
         onTap: widget.onTap,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-          opacity: visible ? 1 : 0,
-          child: AnimatedScale(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutBack,
-            scale: visible ? 1 : 0.6,
-          
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 350),
-              decoration: BoxDecoration(
-                boxShadow: visible
-                    ? []
-                    : [
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.8),
-                    blurRadius: 24,
-                    spreadRadius: 2,
-                  ),
-                  BoxShadow(
-                    color: Colors.blueAccent.withOpacity(0.4),
-                    blurRadius: 30,
-                    spreadRadius: 1,
-                  ),
-                ],
-                color: getCellColor(widget.row, widget.col),
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black38,
-                    width: widget.row % 3 == 0 ? 2 : 0.5,
-                  ),
-                  left: BorderSide(
-                    color: Colors.black38,
-                    width: widget.col % 3 == 0 ? 2 : 0.5,
-                  ),
-                  right: BorderSide(
-                    color: Colors.black38,
-                    width: (widget.col + 1) % 3 == 0 ? 2 : 0.5,
-                  ),
-                  bottom: BorderSide(
-                    color: Colors.black38,
-                    width: (widget.row + 1) % 3 == 0 ? 2 : 0.5,
-                  ),
+        child: TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOutCubic,
+          tween: Tween(
+            begin: 0.92,
+            end: visible ? 1 : 0.92,
+          ),
+          builder: (context, scale, child) {
+            return Opacity(
+              opacity: visible ? 1 : 0,
+              child: Transform.scale(
+                scale: scale,
+                child: child,
+              ),
+            );
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 350),
+            decoration: BoxDecoration(
+              boxShadow: visible
+                  ? []
+                  : [
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.8),
+                  blurRadius: 10,
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.blueAccent.withOpacity(0.4),
+                  blurRadius: 14,
+                  spreadRadius: 0,
+                ),
+              ],
+              color: getCellColor(widget.row, widget.col),
+              border: Border(
+                top: BorderSide(
+                  color: Colors.black38,
+                  width: widget.row % 3 == 0 ? 2.2 : 0.8,
+                ),
+                left: BorderSide(
+                  color: Colors.black38,
+                  width: widget.col % 3 == 0 ? 2.2 : 0.8,
+                ),
+                right: BorderSide(
+                  color: Colors.black38,
+                  width: (widget.col + 1) % 3 == 0 ? 2.2 : 0.8,
+                ),
+                bottom: BorderSide(
+                  color: Colors.black38,
+                  width: (widget.row + 1) % 3 == 0 ? 2.2 : 0.8,
                 ),
               ),
-            
-              child: widget.value != 0
-                  ? widget.isFixed
-                  ? Center(
-                    child: Text(
-                      widget.value.toString(),
-                      style: TextStyle(
-                        fontSize: mainFontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                      ),
+            ),
+          
+            child: widget.value != 0
+                ? widget.isFixed
+                ? Center(
+                  child: Text(
+                    widget.value.toString(),
+                    style: TextStyle(
+                      fontSize: mainFontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black54,
                     ),
-                  )
-                  : Center(
-                child: Text(
-                  widget.value.toString(),
-                  style: TextStyle(
-                    fontSize: mainFontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
                   ),
+                )
+                : Center(
+              child: Text(
+                widget.value.toString(),
+                style: TextStyle(
+                  fontSize: mainFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orangeAccent,
                 ),
-              )
-                  : Padding(
-                padding: const EdgeInsets.all(2),
-                child: Column(
-                  children: List.generate(3, (r) {
-                    return Expanded(
-                      child: Row(
-                        children: List.generate(3, (c) {
-                          int n = r * 3 + c + 1;
-                          return Expanded(
-                            child: Center(
-                              child: Text(
-                                widget.notes.contains(n) ? n.toString() : "",
-                                style: TextStyle(
-                                  fontSize: noteFontSize,
-                                  color: Colors.black38,
-                                ),
+              ),
+            )
+                : Padding(
+              padding: const EdgeInsets.all(2),
+              child: Column(
+                children: List.generate(3, (r) {
+                  return Expanded(
+                    child: Row(
+                      children: List.generate(3, (c) {
+                        int n = r * 3 + c + 1;
+                        return Expanded(
+                          child: Center(
+                            child: Text(
+                              widget.notes.contains(n) ? n.toString() : "",
+                              style: TextStyle(
+                                fontSize: noteFontSize,
+                                color: Colors.black38,
                               ),
                             ),
-                          );
-                        }),
-                      ),
-                    );
-                  }),
-                ),
+                          ),
+                        );
+                      }),
+                    ),
+                  );
+                }),
               ),
             ),
           ),

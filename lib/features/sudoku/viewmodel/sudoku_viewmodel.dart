@@ -397,4 +397,9 @@ class SudokuViewModel extends ChangeNotifier {
     showBoardAnimation = true;
     notifyListeners();
   }
+
+  void hideBoardAnimation() {
+    showBoardAnimation = false;
+    notifyListeners();
+  }
 }
